@@ -1,0 +1,46 @@
+type Query {
+    ordersByProduct(id: ID): [Order]
+    inventoriesByProduct(id: ID): [Inventory]
+}
+
+type Inventory {
+    id: InventoryPK
+    quantity: Int
+}
+
+type InventoryPK {
+    productId: ID
+    warehouseId: ID
+}
+
+
+#scalar Date
+
+type Customer {
+    customerId: ID
+    name: String
+    address: String
+    website: String
+    creditLimit: Int
+}
+
+type Order {
+    orderId : ID
+    status: String
+    orderDate: String
+    customer: Customer
+    salesMan: Employee
+
+}
+#
+type Employee {
+    employeeId: ID
+    firstName: String
+    lastName: String
+    email: String
+    phone: String
+    hireDate: String
+    jobTitle: String
+    manager: Employee
+}
+
