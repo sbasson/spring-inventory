@@ -16,5 +16,8 @@ public interface OrderRepository extends JpaRepository<Order, BigInteger> {
             " from Order o" +
             " join fetch o.orderItems oi" +
             " where oi.product.productId = :productId")
-    List<Order> findOrdersByProduct(@Param("productId") BigInteger productId);
+    List<Order> findOrdersByProduct(BigInteger productId);
+
+    List<Order> findOrdersByCustomer_CustomerId(BigInteger customerId);
+
 }

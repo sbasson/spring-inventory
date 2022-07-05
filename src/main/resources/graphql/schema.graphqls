@@ -1,6 +1,7 @@
 type Query {
     ordersByProduct(id: ID): [Order]
     inventoriesByProduct(id: ID): [Inventory]
+    ordersByCustomer(id: ID): [Order]
 }
 
 type Inventory {

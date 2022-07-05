@@ -27,17 +27,24 @@ class Query {
     private InventoryRepository inventoryRepository;
 
     @QueryMapping
-    public List<Order> ordersByProduct(@Argument("id") BigInteger id) {
+    public List<Order> ordersByProduct(@Argument BigInteger id) {
 
         List<Order> orders = orderRepository.findOrdersByProduct(id);
         return orders;
     }
 
     @QueryMapping
-    public List<Inventory> inventoriesByProduct(@Argument("id") BigInteger id) {
+    public List<Inventory> inventoriesByProduct(@Argument BigInteger id) {
 
         List<Inventory> inventories = inventoryRepository.getInventoryById_ProductIdAndAndQuantityGreaterThan(id,0);
         return inventories;
+    }
+
+    @QueryMapping
+    public List<Order> ordersByCustomer(@Argument BigInteger id) {
+
+        List<Order> orders = orderRepository.findOrdersByCustomer_CustomerId(id);
+        return orders;
     }
 
 
