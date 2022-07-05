@@ -6,6 +6,7 @@ import com.example.demo.persistance.entity.Order;
 import com.example.demo.persistance.repository.CustomerRepository;
 import com.example.demo.persistance.repository.InventoryRepository;
 import com.example.demo.persistance.repository.OrderRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -15,16 +16,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Controller
+@AllArgsConstructor
 class Query {
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private InventoryRepository inventoryRepository;
+    private final InventoryRepository inventoryRepository;
 
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
