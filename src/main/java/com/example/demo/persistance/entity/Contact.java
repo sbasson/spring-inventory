@@ -70,12 +70,12 @@ public class Contact {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return Objects.equals(contactId, contact.contactId) && Objects.equals(firstName, contact.firstName) && Objects.equals(lastName, contact.lastName) && Objects.equals(email, contact.email) && Objects.equals(phone, contact.phone);
+        return contactId.equals(contact.contactId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contactId, firstName, lastName, email, phone);
+        return Objects.hash(contactId);
     }
 
     @ManyToOne

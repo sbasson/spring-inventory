@@ -101,11 +101,11 @@ public class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(productId, product.productId) && Objects.equals(productName, product.productName) && Objects.equals(description, product.description) && Objects.equals(standardCost, product.standardCost) && Objects.equals(listPrice, product.listPrice);
+        return Objects.equals(productId, product.productId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, productName, description, standardCost, listPrice);
+        return Objects.hash(productId);
     }
 }

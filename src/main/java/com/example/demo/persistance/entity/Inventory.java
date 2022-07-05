@@ -60,11 +60,11 @@ public class Inventory {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Inventory inventory = (Inventory) o;
-        return quantity == inventory.quantity && id.equals(inventory.id) && product.equals(inventory.product) && warehouse.equals(inventory.warehouse);
+        return id.equals(inventory.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, quantity, product, warehouse);
+        return Objects.hash(id);
     }
 }

@@ -70,12 +70,12 @@ public class Location {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Location location = (Location) o;
-        return Objects.equals(locationId, location.locationId) && Objects.equals(address, location.address) && Objects.equals(postalCode, location.postalCode) && Objects.equals(city, location.city) && Objects.equals(state, location.state);
+        return Objects.equals(locationId, location.locationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(locationId, address, postalCode, city, state);
+        return Objects.hash(locationId);
     }
 
     @ManyToOne

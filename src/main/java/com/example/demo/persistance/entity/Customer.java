@@ -74,11 +74,11 @@ public class Customer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
-        return Objects.equals(customerId, customer.customerId) && Objects.equals(name, customer.name) && Objects.equals(address, customer.address) && Objects.equals(website, customer.website) && Objects.equals(creditLimit, customer.creditLimit);
+        return Objects.equals(customerId, customer.customerId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(customerId, name, address, website, creditLimit);
+        return Objects.hash(customerId);
     }
 }

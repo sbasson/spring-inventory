@@ -95,12 +95,12 @@ public class Employee {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
-        return Objects.equals(employeeId, employee.employeeId) && Objects.equals(firstName, employee.firstName) && Objects.equals(lastName, employee.lastName) && Objects.equals(email, employee.email) && Objects.equals(phone, employee.phone) && Objects.equals(hireDate, employee.hireDate) && Objects.equals(jobTitle, employee.jobTitle);
+        return Objects.equals(employeeId, employee.employeeId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(employeeId, firstName, lastName, email, phone, hireDate, jobTitle);
+        return Objects.hash(employeeId);
     }
 
     @ManyToOne

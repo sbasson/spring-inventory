@@ -36,11 +36,11 @@ public class Region {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Region region = (Region) o;
-        return Objects.equals(regionId, region.regionId) && Objects.equals(regionName, region.regionName);
+        return Objects.equals(regionId, region.regionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(regionId, regionName);
+        return Objects.hash(regionId);
     }
 }

@@ -36,12 +36,12 @@ public class Country {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Country country = (Country) o;
-        return Objects.equals(countryId, country.countryId) && Objects.equals(countryName, country.countryName);
+        return countryId.equals(country.countryId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(countryId, countryName);
+        return Objects.hash(countryId);
     }
 
     @ManyToOne

@@ -57,12 +57,12 @@ public class Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(orderId, order.orderId) && Objects.equals(status, order.status) && Objects.equals(orderDate, order.orderDate);
+        return Objects.equals(orderId, order.orderId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, status, orderDate);
+        return Objects.hash(orderId);
     }
 
     @ManyToOne

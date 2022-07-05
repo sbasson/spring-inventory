@@ -73,11 +73,11 @@ public class OrderItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderItem orderItem = (OrderItem) o;
-        return quantity == orderItem.quantity && unitPrice == orderItem.unitPrice && id.equals(orderItem.id) && order.equals(orderItem.order) && product.equals(orderItem.product);
+        return id.equals(orderItem.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, quantity, unitPrice, order, product);
+        return Objects.hash(id);
     }
 }

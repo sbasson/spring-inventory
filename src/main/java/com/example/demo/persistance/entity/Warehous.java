@@ -37,12 +37,12 @@ public class Warehous {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Warehous warehous = (Warehous) o;
-        return Objects.equals(warehouseId, warehous.warehouseId) && Objects.equals(warehouseName, warehous.warehouseName);
+        return Objects.equals(warehouseId, warehous.warehouseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(warehouseId, warehouseName);
+        return Objects.hash(warehouseId);
     }
 
     @ManyToOne
