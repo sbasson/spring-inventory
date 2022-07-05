@@ -18,6 +18,7 @@ public class Employee {
     private String jobTitle;
     private Employee manager;
     private Collection<Employee> employeesBelow;
+    private Collection<Order> orders;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -120,5 +121,14 @@ public class Employee {
 
     public void setEmployeesBelow(Collection<Employee> employeesBelow) {
         this.employeesBelow = employeesBelow;
+    }
+
+    @OneToMany(mappedBy = "salesMan")
+    public Collection<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Collection<Order> orders) {
+        this.orders = orders;
     }
 }

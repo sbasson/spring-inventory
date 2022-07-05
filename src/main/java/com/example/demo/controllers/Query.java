@@ -1,19 +1,19 @@
 package com.example.demo.controllers;
 
 
+import com.example.demo.persistance.entity.Employee;
 import com.example.demo.persistance.entity.Inventory;
 import com.example.demo.persistance.entity.Order;
-import com.example.demo.persistance.repository.CustomerRepository;
+import com.example.demo.persistance.repository.EmployeeRepository;
 import com.example.demo.persistance.repository.InventoryRepository;
 import com.example.demo.persistance.repository.OrderRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 import java.math.BigInteger;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -22,6 +22,8 @@ class Query {
     private final OrderRepository orderRepository;
 
     private final InventoryRepository inventoryRepository;
+
+    private final EmployeeRepository employeeRepository;
 
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
@@ -43,6 +45,28 @@ class Query {
         List<Order> orders = orderRepository.findOrdersByCustomer_CustomerId(id);
         return orders;
     }
+
+    @QueryMapping
+    public Iterable<Employee> pendingOrdersOfSalesMans() {
+
+        //option one - filter in the app, more code, less readable, more runtime
+//        List<Employee> all = employeeRepository.findAll();
+//
+//        Map<Employee, List<Order>> salesToOrderMap = all.stream()
+//                .flatMap(employee -> employee.getOrders().stream())
+//                .filter(order -> order.getStatus().equals("Pending"))
+//                .collect(Collectors.groupingBy(Order::getSalesMan));
+//
+//        Set<Employee> pendingSalesMan = salesToOrderMap.keySet();
+//
+//        pendingSalesMan.forEach(employee -> employee.setOrders(salesToOrderMap.get(employee)));
+
+        //option two - filter in the jpa via query, less code, more readable, less runtime
+        List<Employee> pendingSalesMan = orderRepository.salesMansOfPendingOrders();
+        return pendingSalesMan;
+    }
+
+
 
 
 

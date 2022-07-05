@@ -1,10 +1,9 @@
 package com.example.demo.persistance.repository;
 
+import com.example.demo.persistance.entity.Employee;
 import com.example.demo.persistance.entity.Order;
-import com.example.demo.persistance.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, BigInteger> {
 
-    @Query( " select o " +
+    @Query( " select o" +
             " from Order o" +
             " join fetch o.orderItems oi" +
             " where oi.product.productId = :productId")
@@ -20,4 +19,9 @@ public interface OrderRepository extends JpaRepository<Order, BigInteger> {
 
     List<Order> findOrdersByCustomer_CustomerId(BigInteger customerId);
 
+    @Query( " select distinct e" +
+            " from Employee e" +
+            " join fetch e.orders o " +
+            " where o.status = 'Pending'")
+    List<Employee> salesMansOfPendingOrders();
 }

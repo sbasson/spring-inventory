@@ -2,6 +2,7 @@ type Query {
     ordersByProduct(id: ID): [Order]
     inventoriesByProduct(id: ID): [Inventory]
     ordersByCustomer(id: ID): [Order]
+    pendingOrdersOfSalesMans : [Employee]
 }
 
 type Inventory {
@@ -43,5 +44,6 @@ type Employee {
     hireDate: String
     jobTitle: String
     manager: Employee
+    orders: [Order]
 }
 
