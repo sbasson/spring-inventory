@@ -12,7 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "ORDERS", schema = "OT", catalog = "")
+@Table(name = "ORDERS", schema = "OT")
 public class Order {
     private BigInteger orderId;
     private String status;

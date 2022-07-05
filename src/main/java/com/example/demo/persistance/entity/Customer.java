@@ -10,7 +10,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "CUSTOMERS", schema = "OT", catalog = "")
+@Table(name = "CUSTOMERS", schema = "OT")
 public class Customer {
     private BigInteger customerId;
     private String name;

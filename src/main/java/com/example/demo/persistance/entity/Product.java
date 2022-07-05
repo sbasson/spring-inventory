@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Entity
-@Table(name = "PRODUCTS", schema = "OT", catalog = "")
+@Table(name = "PRODUCTS", schema = "OT")
 public class Product {
     private BigInteger productId;
     private String productName;

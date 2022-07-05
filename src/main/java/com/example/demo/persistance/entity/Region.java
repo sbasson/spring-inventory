@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 @Entity
-@Table(name = "REGIONS", schema = "OT", catalog = "")
+@Table(name = "REGIONS", schema = "OT")
 public class Region {
     private BigInteger regionId;
     private String regionName;
