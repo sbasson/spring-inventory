@@ -2,7 +2,32 @@ type Query {
     ordersByProduct(id: ID): [Order]
     inventoriesByProduct(id: ID): [Inventory]
     ordersByCustomer(id: ID): [Order]
-    pendingOrdersOfSalesMans : [Employee]
+    pendingOrdersOfSalesMans: [Employee]
+    topFiveSellingProductPerCountry: [CountryProducts]
+}
+
+type CountryProducts {
+    country: Country
+    products: [Product]
+}
+
+type Country {
+    countryId: ID
+    countryName: String
+}
+
+type Product {
+    productId : ID
+    productName: String
+    description: String
+    standardCost: Int
+    listPrice: Int
+    productCategory: ProductCategory
+}
+
+type ProductCategory {
+    categoryId: Int
+    categoryName: String
 }
 
 type Inventory {

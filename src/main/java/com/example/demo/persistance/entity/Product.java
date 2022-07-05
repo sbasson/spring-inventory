@@ -1,10 +1,13 @@
 package com.example.demo.persistance.entity;
 
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Objects;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "PRODUCTS", schema = "OT")
 public class Product {
@@ -16,6 +19,14 @@ public class Product {
     private Collection<Inventory> inventories;
     private ProductCategory productCategory;
     private Collection<OrderItem> orderItems;
+
+    public Product(BigInteger productId, String productName, String description, Integer standardCost, Integer listPrice) {
+        this.productId = productId;
+        this.productName = productName;
+        this.description = description;
+        this.standardCost = standardCost;
+        this.listPrice = listPrice;
+    }
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
