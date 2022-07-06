@@ -4,6 +4,12 @@ type Query {
     ordersByCustomer(id: ID): [Order]
     pendingOrdersOfSalesMans: [Employee]
     topFiveSellingProductPerCountry: [CountryProducts]
+    warehousesOutOfStockByProduct(id: ID): [Warehouse]
+}
+
+type Warehouse {
+    warehouseId: ID
+    warehouseName: String
 }
 
 type CountryProducts {

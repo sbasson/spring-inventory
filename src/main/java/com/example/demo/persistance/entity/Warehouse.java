@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "WAREHOUSES", schema = "OT")
-public class Warehous {
+public class Warehouse {
     private BigInteger warehouseId;
     private String warehouseName;
     private Location location;
@@ -36,8 +36,8 @@ public class Warehous {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Warehous warehous = (Warehous) o;
-        return Objects.equals(warehouseId, warehous.warehouseId);
+        Warehouse warehouse = (Warehouse) o;
+        return Objects.equals(warehouseId, warehouse.warehouseId);
     }
 
     @Override

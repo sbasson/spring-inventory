@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface InventoryRepository extends JpaRepository<Inventory, InventoryPK> {
 
-    List<Inventory> getInventoryById_ProductIdAndAndQuantityGreaterThan(BigInteger productId, int amount);
+    List<Inventory> getInventoriesById_ProductId(BigInteger productId);
 }

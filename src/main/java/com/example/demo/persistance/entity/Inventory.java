@@ -19,7 +19,7 @@ public class Inventory {
     @MapsId("warehouseId")
     @ManyToOne
     @JoinColumn(name = "WAREHOUSE_ID", referencedColumnName = "WAREHOUSE_ID", nullable = false)
-    private Warehous warehouse;
+    private Warehouse warehouse;
 
     public InventoryPK getId() {
         return id;
@@ -47,11 +47,11 @@ public class Inventory {
         this.product = product;
     }
 
-    public Warehous getWarehouse() {
+    public Warehouse getWarehouse() {
         return warehouse;
     }
 
-    public void setWarehouse(Warehous warehouse) {
+    public void setWarehouse(Warehouse warehouse) {
         this.warehouse = warehouse;
     }
 

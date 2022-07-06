@@ -10,6 +10,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -35,7 +36,9 @@ class Query {
     @QueryMapping
     public List<Inventory> inventoriesByProduct(@Argument BigInteger id) {
 
-        List<Inventory> inventories = inventoryRepository.getInventoryById_ProductIdAndAndQuantityGreaterThan(id,0);
+        List<Inventory> inventories = inventoryRepository.getInventoriesById_ProductId(id)
+                .stream().filter(i->i.getQuantity()>0).collect(Collectors.toList());
+
         return inventories;
     }
 
@@ -88,6 +91,16 @@ class Query {
         return countryProductsDTO;
     }
 
+    @QueryMapping
+    public List<Warehouse> warehousesOutOfStockByProduct(@Argument BigInteger id) {
+
+        List<Inventory> inventories = inventoryRepository.getInventoriesById_ProductId(id);
+
+        List<Warehouse> warehouses = inventories.stream().filter(i->i.getQuantity()==0)
+                .map(Inventory::getWarehouse).collect(Collectors.toList());
+
+        return warehouses;
+    }
 
 
 
