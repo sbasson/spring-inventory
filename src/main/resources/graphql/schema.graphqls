@@ -2,10 +2,13 @@ type Query {
     ordersByProduct(id: ID): [Order]
     inventoriesByProduct(id: ID): [Inventory]
     ordersByCustomer(id: ID): [Order]
-    pendingOrdersOfSalesMans: [Employee]
-    topFiveSellingProductPerCountry: [CountryProducts]
+    salesmanWithPendingOrders: [Employee]
+    countriesWithTopFiveSellingProduct: [CountryProducts]
     warehousesOutOfStockByProduct(id: ID): [Warehouse]
+    ordersByDate(date: Date): [Order]
+    productByCategory(id: ID) : [Product]
 }
+scalar Date
 
 type Warehouse {
     warehouseId: ID
@@ -46,9 +49,6 @@ type InventoryPK {
     warehouseId: ID
 }
 
-
-#scalar Date
-
 type Customer {
     customerId: ID
     name: String
@@ -60,21 +60,19 @@ type Customer {
 type Order {
     orderId : ID
     status: String
-    orderDate: String
+    orderDate: Date
     customer: Customer
     salesMan: Employee
-
 }
-#
+
 type Employee {
     employeeId: ID
     firstName: String
     lastName: String
     email: String
     phone: String
-    hireDate: String
+    hireDate: Date
     jobTitle: String
     manager: Employee
     orders: [Order]
 }
-

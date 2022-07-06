@@ -2,7 +2,7 @@ package com.example.demo.persistance.entity;
 
 import javax.persistence.*;
 import java.math.BigInteger;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ public class Employee {
     private String lastName;
     private String email;
     private String phone;
-    private Date hireDate;
+    private LocalDate hireDate;
     private String jobTitle;
     private Employee manager;
     private Collection<Employee> employeesBelow;
@@ -73,11 +73,11 @@ public class Employee {
 
     @Basic
     @Column(name = "HIRE_DATE")
-    public Date getHireDate() {
+    public LocalDate getHireDate() {
         return hireDate;
     }
 
-    public void setHireDate(Date hireDate) {
+    public void setHireDate(LocalDate hireDate) {
         this.hireDate = hireDate;
     }
 

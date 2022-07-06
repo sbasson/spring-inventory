@@ -18,4 +18,6 @@ public interface ProductRepository extends JpaRepository<Product, BigInteger> {
                 " group by oi.product.productId,oi.product.productName,oi.product.description,oi.product.standardCost,oi.product.listPrice" +
                 " order by sum(oi.quantity) desc")
         List<Product> topSellingProductsByCountry(String countryId);
+
+        List<Product> findProductsByProductCategory_CategoryId(BigInteger id);
 }

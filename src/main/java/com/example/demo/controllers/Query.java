@@ -9,6 +9,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ class Query {
     }
 
     @QueryMapping
-    public Iterable<Employee> pendingOrdersOfSalesMans() {
+    public List<Employee> salesmanWithPendingOrders() {
 
         //option one - filter in the app, more code, less readable, more runtime
 //        List<Employee> all = employeeRepository.findAll();
@@ -66,11 +67,12 @@ class Query {
 
         //option two - filter in the jpa via query, less code, more readable, less runtime
         List<Employee> pendingSalesMan = orderRepository.salesMansOfPendingOrders();
+
         return pendingSalesMan;
     }
 
     @QueryMapping
-    public List<CountryProductsDTO> topFiveSellingProductPerCountry() {
+    public List<CountryProductsDTO> countriesWithTopFiveSellingProduct() {
 
         List<Country> allCountries = countryRepository.findAll();
 
@@ -102,8 +104,21 @@ class Query {
         return warehouses;
     }
 
+    @QueryMapping
+    public List<Order> ordersByDate(@Argument LocalDate date) {
 
+        List<Order> orders = orderRepository.getOrderByOrderDate(date);
 
+        return orders;
+    }
+
+    @QueryMapping
+    public List<Product> productByCategory(@Argument BigInteger id) {
+
+        List<Product> products = productRepository.findProductsByProductCategory_CategoryId(id);
+
+        return products;
+    }
 
 }
 

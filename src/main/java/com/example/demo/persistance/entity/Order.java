@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigInteger;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 public class Order {
     private BigInteger orderId;
     private String status;
-    private Date orderDate;
+    private LocalDate orderDate;
     private Customer customer;
     private Employee salesMan;
     private Collection<OrderItem> orderItems;
@@ -44,11 +44,11 @@ public class Order {
 
     @Basic
     @Column(name = "ORDER_DATE")
-    public Date getOrderDate() {
+    public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(Date orderDate) {
+    public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
     }
 
