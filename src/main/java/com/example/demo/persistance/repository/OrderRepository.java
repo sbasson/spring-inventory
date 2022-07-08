@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, BigInteger> {
 
-    @Query( " select o" +
+    @Query( " select distinct o" +
             " from Order o" +
-            " join fetch o.orderItems oi" +
+            " join o.orderItems oi" +
             " where oi.product.productId = :productId")
     List<Order> findOrdersByProduct(BigInteger productId);
 

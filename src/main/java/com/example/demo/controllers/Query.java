@@ -27,10 +27,18 @@ class Query {
 
     private final CountryRepository countryRepository;
 
+    private final OrderItemRepository orderItemRepository;
+
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
 
-        List<Order> orders = orderRepository.findOrdersByProduct(id);
+//        option one - via jpql
+//        List<Order> orders = orderRepository.findOrdersByProduct(id);
+
+//        option two - via jpaRepository naming convention
+        List<Order> orders = orderItemRepository.getOrderItemsByProduct_ProductId(id)
+                .stream().map(OrderItem::getOrder).distinct().collect(Collectors.toList());
+
         return orders;
     }
 
