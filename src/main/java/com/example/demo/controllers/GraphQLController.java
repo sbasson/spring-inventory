@@ -7,6 +7,7 @@ import com.example.demo.utility.CountryProductsDTO;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.ProductInput;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -41,10 +42,10 @@ class GraphQLController {
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
 
-//        option one - via jpql
-//        List<Order> orders = orderRepository.findOrdersByProduct(id);
+        //option one - via jpql
+        //List<Order> orders = orderRepository.findOrdersByProduct(id);
 
-//        option two - via jpaRepository naming convention
+        //option two - via jpaRepository naming convention
         List<Order> orders = orderItemRepository.getOrderItemsByProduct_ProductId(id)
                 .stream().map(OrderItem::getOrder).distinct().collect(Collectors.toList());
 
@@ -71,16 +72,16 @@ class GraphQLController {
     public List<Employee> salesmanWithPendingOrders() {
 
         //option one - filter in the app, more code, less readable, more runtime
-//        List<Employee> all = employeeRepository.findAll();
-//
-//        Map<Employee, List<Order>> salesToOrderMap = all.stream()
-//                .flatMap(employee -> employee.getOrders().stream())
-//                .filter(order -> order.getStatus().equals("Pending"))
-//                .collect(Collectors.groupingBy(Order::getSalesMan));
-//
-//        Set<Employee> pendingSalesMan = salesToOrderMap.keySet();
-//
-//        pendingSalesMan.forEach(employee -> employee.setOrders(salesToOrderMap.get(employee)));
+        //List<Employee> all = employeeRepository.findAll();
+        //
+        //Map<Employee, List<Order>> salesToOrderMap = all.stream()
+        //        .flatMap(employee -> employee.getOrders().stream())
+        //        .filter(order -> order.getStatus().equals("Pending"))
+        //        .collect(Collectors.groupingBy(Order::getSalesMan));
+        //
+        //Set<Employee> pendingSalesMan = salesToOrderMap.keySet();
+        //
+        //pendingSalesMan.forEach(employee -> employee.setOrders(salesToOrderMap.get(employee)));
 
         //option two - filter in the jpa via query, less code, more readable, less runtime
         List<Employee> pendingSalesMan = orderRepository.salesMansOfPendingOrders();
@@ -98,11 +99,7 @@ class GraphQLController {
 
         for (Country country : allCountries) {
 
-            products = productRepository.topSellingProductsByCountry(country.getCountryId());
-
-            if (products.size()>=5) {
-                products = products.subList(0,5);
-            }
+            products = productRepository.topSellingProductsByCountry(country.getCountryId(), PageRequest.of(0, 5));
 
             countryProductsDTO.add(new CountryProductsDTO(country,products));
         }

@@ -1,7 +1,7 @@
 package com.example.demo.persistance.repository;
 
-import com.example.demo.persistance.entity.Order;
 import com.example.demo.persistance.entity.Product;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,7 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, BigInteger> {
                 " and i.warehouse.location.country.countryId = :countryId" +
                 " group by oi.product.productId,oi.product.productName,oi.product.description,oi.product.standardCost,oi.product.listPrice" +
                 " order by sum(oi.quantity) desc")
-        List<Product> topSellingProductsByCountry(String countryId);
+        List<Product> topSellingProductsByCountry(String countryId, Pageable pageable);
 
         List<Product> findProductsByProductCategory_CategoryId(BigInteger id);
 }
