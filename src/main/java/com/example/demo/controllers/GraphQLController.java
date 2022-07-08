@@ -152,10 +152,10 @@ class GraphQLController {
     @MutationMapping
     public Product createProduct(@Argument ProductInput input) {
 
-        Product newProduct = new Product(null,input.getProductName(),input.getDescription(),
-                input.getStandardCost(),input.getListPrice());
+        Product newProduct = new Product(null,input.productName(),input.description(),
+                input.standardCost(),input.listPrice());
 
-        Optional<ProductCategory> productCategory = productCategoryRepository.findById(input.getProductCategoryId());
+        Optional<ProductCategory> productCategory = productCategoryRepository.findById(input.productCategoryId());
 
         if (productCategory.isEmpty()) {
             return newProduct;
@@ -169,13 +169,13 @@ class GraphQLController {
     @MutationMapping
     public Product updateProduct(@Argument ProductInput input) {
 
-        Product updateProduct = new Product(input.getProductId(),input.getProductName(),input.getDescription(),
-                input.getStandardCost(),input.getListPrice());
+        Product updateProduct = new Product(input.productId(),input.productName(),input.description(),
+                input.standardCost(),input.listPrice());
 
         Optional<ProductCategory> productCategory;
 
-        if (input.getProductCategoryId()!=null) {
-            productCategory = productCategoryRepository.findById(input.getProductCategoryId());
+        if (input.productCategoryId()!=null) {
+            productCategory = productCategoryRepository.findById(input.productCategoryId());
 
             if (productCategory.isEmpty())
                 return updateProduct;
@@ -219,13 +219,13 @@ class GraphQLController {
     @MutationMapping
     public Order createOrder(@Argument OrderInput input) {
 
-        Order newOrder = new Order(null, input.getStatus(), input.getOrderDate(),null,null,null);
+        Order newOrder = new Order(null, input.status(), input.orderDate(),null,null,null);
 
-        Optional<Customer> customer = customerRepository.findById(input.getCustomerId());
+        Optional<Customer> customer = customerRepository.findById(input.customerId());
         Optional<Employee> salesMan;
 
-        if (input.getSalesManId()!=null) {
-            salesMan = employeeRepository.findById(input.getSalesManId());
+        if (input.salesManId()!=null) {
+            salesMan = employeeRepository.findById(input.salesManId());
             salesMan.ifPresent(newOrder::setSalesMan);
         }
 
@@ -240,18 +240,18 @@ class GraphQLController {
     @MutationMapping
     public Order updateOrder(@Argument OrderInput input) {
 
-        Order newOrder = new Order(input.getOrderId(), input.getStatus(), input.getOrderDate(),null,null,null);
+        Order newOrder = new Order(input.orderId(), input.status(), input.orderDate(),null,null,null);
 
         Optional<Customer> customer;
         Optional<Employee> salesMan;
 
-        if (input.getSalesManId()!=null) {
-            salesMan = employeeRepository.findById(input.getSalesManId());
+        if (input.salesManId()!=null) {
+            salesMan = employeeRepository.findById(input.salesManId());
             salesMan.ifPresent(newOrder::setSalesMan);
         }
 
-        if (input.getCustomerId()!=null) {
-            customer = customerRepository.findById(input.getCustomerId());
+        if (input.customerId()!=null) {
+            customer = customerRepository.findById(input.customerId());
 
             if (customer.isEmpty())
                 return newOrder;

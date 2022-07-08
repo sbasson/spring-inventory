@@ -5,14 +5,9 @@ import lombok.Data;
 
 import java.math.BigInteger;
 
-@Data
-@AllArgsConstructor
-public class ProductInput {
-
-    private BigInteger productId;
-    private String productName;
-    private String description;
-    private Integer standardCost;
-    private Integer listPrice;
-    private BigInteger productCategoryId;
-}
+public record ProductInput(BigInteger productId,
+                           String productName,
+                           String description,
+                           Integer standardCost,
+                           Integer listPrice,
+                           BigInteger productCategoryId) {}

@@ -7,10 +7,5 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-public class CountryProductsDTO {
-
-    Country country;
-    List<Product> products;
-}
+public record CountryProductsDTO(Country country,
+                                List<Product> products) {}
