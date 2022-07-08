@@ -1,8 +1,3 @@
-#type Mutation{
-#
-#
-#}
-
 type Query {
     ordersByProduct(id: ID): [Order]
     inventoriesByProduct(id: ID): [Inventory]
@@ -13,6 +8,41 @@ type Query {
     ordersByDate(date: Date): [Order]
     productByCategory(id: ID) : [Product]
 }
+
+type Mutation{
+
+    #note: by conventions we do need to put different input and return type per crud operation (per type)
+    # but for this scope i used the same input type.
+
+    createProduct(input: ProductInput) : Product
+    updateProduct(input: ProductInput) : Product
+    deleteProduct(id: ID) : Product
+
+    createOrder(input: OrderInput) : Order
+    updateOrder(input: OrderInput) : Order
+    deleteOrder(id: ID) : Order
+
+    deleteWarehouse(id: ID): Warehouse
+}
+
+input OrderInput {
+    orderId : ID
+    status: String
+    orderDate: Date
+    customerId: ID
+    salesManId: ID
+}
+
+input ProductInput {
+    productId : ID
+    productName: String
+    description: String
+    standardCost: Int
+    listPrice: Int
+    productCategoryId: ID
+}
+
+
 scalar Date
 
 type Warehouse {
@@ -40,7 +70,7 @@ type Product {
 }
 
 type ProductCategory {
-    categoryId: Int
+    categoryId: ID
     categoryName: String
 }
 

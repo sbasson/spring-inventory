@@ -1,5 +1,6 @@
 package com.example.demo.persistance.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "PRODUCTS", schema = "OT")
 public class Product {
