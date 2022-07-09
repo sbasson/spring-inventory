@@ -1,11 +1,16 @@
 package com.example.demo.persistance.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
 
 @Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
 public class InventoryPK implements Serializable {
     private BigInteger productId;
     private BigInteger warehouseId;

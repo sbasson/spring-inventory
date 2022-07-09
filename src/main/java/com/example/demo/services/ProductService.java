@@ -24,8 +24,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final CountryRepository countryRepository;
-    private final WarehouseService warehouseService;
-
 
     public Product deleteProduct(BigInteger id) {
         Product deleteProduct = new Product();

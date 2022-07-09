@@ -26,6 +26,8 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final OrderItemRepository orderItemRepository;
+    private final WarehouseService warehouseService;
+
 
 
     public Order deleteOrder(BigInteger id) {
@@ -39,6 +41,8 @@ public class OrderService {
             orderRepository.deleteById(id);
         }
 
+        warehouseService.updateWarehouseOrderDeleted(deleteOrder);
+
         return deleteOrder;
     }
 
@@ -46,7 +50,7 @@ public class OrderService {
         
         Order newOrder = fromInput(input);
 
-        setSalesMan(input, newOrder);
+        setSalesMan(newOrder, input);
 
         Optional<Customer> customer = customerRepository.findById(input.customerId());
 
@@ -55,39 +59,45 @@ public class OrderService {
         else
             newOrder.setCustomer(customer.get());
 
-        setOrderItems(input, newOrder);
+        setOrderItems(newOrder, input);
 
         newOrder = orderRepository.save(newOrder);
+
+        warehouseService.updateWarehouseOrderCreated(newOrder);
 
         return newOrder;
     }
 
     public Order updateOrder(OrderInput input) {
 
-        Order newOrder = fromInput(input);
+        Order updatedOrder = fromInput(input);
 
         Optional<Customer> customer;
 
-        setSalesMan(input, newOrder);
+        setSalesMan(updatedOrder, input);
 
         if (input.customerId()!=null) {
             customer = customerRepository.findById(input.customerId());
 
             if (customer.isEmpty())
-                return newOrder;
+                return updatedOrder;
             else
-                newOrder.setCustomer(customer.get());
+                updatedOrder.setCustomer(customer.get());
         }
 
-        setOrderItems(input, newOrder);
+        setOrderItems(updatedOrder, input);
 
-        return orderRepository.save(newOrder);
+        updatedOrder = orderRepository.save(updatedOrder);
+
+        warehouseService.updateWarehouseOrderUpdated(updatedOrder,input);
+
+        return updatedOrder;
     }
 
-    private void setSalesMan(OrderInput input, Order newOrder) {
+    private void setSalesMan(Order order, OrderInput input) {
 
         if (input.salesManId()!=null) {
-            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
+            employeeRepository.findById(input.salesManId()).ifPresent(order::setSalesMan);
         }
     }
 
@@ -120,7 +130,7 @@ public class OrderService {
         return new Order(input.orderId(), input.status(), input.orderDate(), null, null, null);
     }
 
-    private void setOrderItems(OrderInput input, Order newOrder) {
+    private void setOrderItems(Order newOrder, OrderInput input) {
         List<OrderItem> orderItems;
         OrderItem orderItem;
 

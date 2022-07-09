@@ -36,7 +36,7 @@ class GraphQLController {
     @QueryMapping
     public List<Inventory> inventoriesByProduct(@Argument BigInteger id) {
 
-        return warehouseService.getInventoriesByProduct(id);
+        return warehouseService.getAvailableInventoriesByProduct(id);
     }
 
     @QueryMapping
