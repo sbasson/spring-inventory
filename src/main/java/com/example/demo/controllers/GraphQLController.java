@@ -222,11 +222,11 @@ class GraphQLController {
 
         Order newOrder = new Order(null, input.status(), input.orderDate(),null,null,null);
 
-        Optional<Customer> customer = customerRepository.findById(input.customerId());
-
         if (input.salesManId()!=null) {
             employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
         }
+
+        Optional<Customer> customer = customerRepository.findById(input.customerId());
 
         if (customer.isEmpty())
             return newOrder;
@@ -264,11 +264,9 @@ class GraphQLController {
         Order newOrder = new Order(input.orderId(), input.status(), input.orderDate(),null,null,null);
 
         Optional<Customer> customer;
-        Optional<Employee> salesMan;
 
         if (input.salesManId()!=null) {
-            salesMan = employeeRepository.findById(input.salesManId());
-            salesMan.ifPresent(newOrder::setSalesMan);
+            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
         }
 
         if (input.customerId()!=null) {
@@ -278,6 +276,26 @@ class GraphQLController {
                 return newOrder;
             else
                 newOrder.setCustomer(customer.get());
+        }
+
+        List<OrderItem> orderItems;
+        OrderItem orderItem;
+
+        if (input.orderItems()!=null) {
+
+            orderItems = new ArrayList<>(input.orderItems().size());
+
+            for (OrderItemInput orderItemInput : input.orderItems()) {
+
+                orderItem = new OrderItem(new OrderItemPK(orderItemInput.orderId(),orderItemInput.itemId()),
+                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
+
+                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
+
+                orderItems.add(orderItem);
+            }
+
+            newOrder.setOrderItems(orderItems);
         }
 
         return orderRepository.save(newOrder);
