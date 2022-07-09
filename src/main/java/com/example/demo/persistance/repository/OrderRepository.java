@@ -20,11 +20,5 @@ public interface OrderRepository extends JpaRepository<Order, BigInteger> {
 
     List<Order> findOrdersByCustomer_CustomerId(BigInteger customerId);
 
-    @Query( " select distinct e" +
-            " from Employee e" +
-            " join fetch e.orders o " +
-            " where o.status = 'Pending'")
-    List<Employee> salesMansOfPendingOrders();
-
     List<Order> getOrderByOrderDate(LocalDate date);
 }

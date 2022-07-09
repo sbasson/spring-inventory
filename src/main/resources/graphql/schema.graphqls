@@ -6,7 +6,7 @@ type Query {
     countriesWithTopFiveSellingProduct: [CountryProducts]
     warehousesOutOfStockByProduct(id: ID): [Warehouse]
     ordersByDate(date: Date): [Order]
-    productByCategory(id: ID) : [Product]
+    productsByCategory(id: ID) : [Product]
 }
 
 type Mutation{

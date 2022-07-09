@@ -3,12 +3,14 @@ package com.example.demo.controllers;
 
 import com.example.demo.persistance.entity.*;
 import com.example.demo.persistance.repository.*;
+import com.example.demo.services.EmployeeService;
+import com.example.demo.services.OrderService;
+import com.example.demo.services.ProductService;
+import com.example.demo.services.WarehouseService;
 import com.example.demo.utility.CountryProductsDTO;
 import com.example.demo.utility.OrderInput;
-import com.example.demo.utility.OrderItemInput;
 import com.example.demo.utility.ProductInput;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -16,290 +18,106 @@ import org.springframework.stereotype.Controller;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
 class GraphQLController {
 
-    private final OrderRepository orderRepository;
-
-    private final InventoryRepository inventoryRepository;
-
-    private final EmployeeRepository employeeRepository;
-
-    private final ProductRepository productRepository;
-
-    private final CountryRepository countryRepository;
-
-    private final OrderItemRepository orderItemRepository;
-
-    private final ProductCategoryRepository productCategoryRepository;
-
-    private final WarehouseRepository warehouseRepository;
-
-    private final CustomerRepository customerRepository;
+    private final ProductService productService;
+    private final WarehouseService warehouseService;
+    private final OrderService orderService;
+    private final EmployeeService employeeService;
 
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
 
-        //option one - via jpql
-        //List<Order> orders = orderRepository.findOrdersByProduct(id);
-
-        //option two - via jpaRepository naming convention
-        List<Order> orders = orderItemRepository.getOrderItemsByProduct_ProductId(id)
-                .stream().map(OrderItem::getOrder).distinct().collect(Collectors.toList());
-
-        return orders;
+        return orderService.getOrdersByProduct(id);
     }
 
     @QueryMapping
     public List<Inventory> inventoriesByProduct(@Argument BigInteger id) {
 
-        List<Inventory> inventories = inventoryRepository.getInventoriesById_ProductId(id)
-                .stream().filter(i->i.getQuantity()>0).collect(Collectors.toList());
-
-        return inventories;
+        return warehouseService.getInventoriesByProduct(id);
     }
 
     @QueryMapping
     public List<Order> ordersByCustomer(@Argument BigInteger id) {
 
-        List<Order> orders = orderRepository.findOrdersByCustomer_CustomerId(id);
-        return orders;
+        return orderService.getOrdersByCustomer(id);
     }
 
     @QueryMapping
     public List<Employee> salesmanWithPendingOrders() {
 
-        //option one - filter in the app, more code, less readable, more runtime
-        //List<Employee> all = employeeRepository.findAll();
-        //
-        //Map<Employee, List<Order>> salesToOrderMap = all.stream()
-        //        .flatMap(employee -> employee.getOrders().stream())
-        //        .filter(order -> order.getStatus().equals("Pending"))
-        //        .collect(Collectors.groupingBy(Order::getSalesMan));
-        //
-        //Set<Employee> pendingSalesMan = salesToOrderMap.keySet();
-        //
-        //pendingSalesMan.forEach(employee -> employee.setOrders(salesToOrderMap.get(employee)));
-
-        //option two - filter in the jpa via query, less code, more readable, less runtime
-        List<Employee> pendingSalesMan = orderRepository.salesMansOfPendingOrders();
-
-        return pendingSalesMan;
+        return employeeService.getSalesmanWithPendingOrders();
     }
 
     @QueryMapping
     public List<CountryProductsDTO> countriesWithTopFiveSellingProduct() {
 
-        List<Country> allCountries = countryRepository.findAll();
-
-        List<Product> products;
-        List<CountryProductsDTO> countryProductsDTO = new ArrayList<>();
-
-        for (Country country : allCountries) {
-
-            products = productRepository.topSellingProductsByCountry(country.getCountryId(), PageRequest.of(0, 5));
-
-            countryProductsDTO.add(new CountryProductsDTO(country,products));
-        }
-
-        return countryProductsDTO;
+        return productService.getCountriesWithTopFiveSellingProduct();
     }
 
     @QueryMapping
     public List<Warehouse> warehousesOutOfStockByProduct(@Argument BigInteger id) {
 
-        List<Inventory> inventories = inventoryRepository.getInventoriesById_ProductId(id);
-
-        List<Warehouse> warehouses = inventories.stream().filter(i->i.getQuantity()==0)
-                .map(Inventory::getWarehouse).collect(Collectors.toList());
-
-        return warehouses;
+        return warehouseService.warehousesOutOfStockByProduct(id);
     }
 
     @QueryMapping
     public List<Order> ordersByDate(@Argument LocalDate date) {
 
-        List<Order> orders = orderRepository.getOrderByOrderDate(date);
-
-        return orders;
+        return orderService.getOrdersByDate(date);
     }
 
     @QueryMapping
-    public List<Product> productByCategory(@Argument BigInteger id) {
+    public List<Product> productsByCategory(@Argument BigInteger id) {
 
-        List<Product> products = productRepository.findProductsByProductCategory_CategoryId(id);
-
-        return products;
+        return productService.getProductsByCategory(id);
     }
 
     @MutationMapping
     public Product deleteProduct(@Argument BigInteger id) {
 
-        Product deleteProduct = new Product();
-
-        Optional<Product> findProduct = productRepository.findById(id);
-
-        if (findProduct.isPresent()) {
-            deleteProduct = findProduct.get();
-            productRepository.deleteById(id);
-        }
-
-        return deleteProduct;
+        return productService.deleteProduct(id);
     }
 
     @MutationMapping
     public Product createProduct(@Argument ProductInput input) {
 
-        Product newProduct = new Product(null,input.productName(),input.description(),
-                input.standardCost(),input.listPrice());
-
-        Optional<ProductCategory> productCategory = productCategoryRepository.findById(input.productCategoryId());
-
-        if (productCategory.isEmpty()) {
-            return newProduct;
-        }
-
-        newProduct.setProductCategory(productCategory.get());
-
-        return productRepository.save(newProduct);
+        return productService.createProduct(input);
     }
 
     @MutationMapping
     public Product updateProduct(@Argument ProductInput input) {
 
-        Product updateProduct = new Product(input.productId(),input.productName(),input.description(),
-                input.standardCost(),input.listPrice());
-
-        Optional<ProductCategory> productCategory;
-
-        if (input.productCategoryId()!=null) {
-            productCategory = productCategoryRepository.findById(input.productCategoryId());
-
-            if (productCategory.isEmpty())
-                return updateProduct;
-            else
-                updateProduct.setProductCategory(productCategory.get());
-        }
-
-        return productRepository.save(updateProduct);
+        return productService.updateProduct(input);
     }
 
     @MutationMapping
     public Warehouse deleteWarehouse(@Argument BigInteger id) {
 
-        Warehouse deleteWarehouse = new Warehouse();
-
-        Optional<Warehouse> findWarehouse = warehouseRepository.findById(id);
-
-        if (findWarehouse.isPresent()) {
-            deleteWarehouse = findWarehouse.get();
-            warehouseRepository.deleteById(id);
-        }
-
-        return deleteWarehouse;
+        return warehouseService.deleteWarehouse(id);
     }
 
     @MutationMapping
     public Order deleteOrder(@Argument BigInteger id) {
 
-        Order deleteOrder = new Order();
-
-        Optional<Order> findOrder = orderRepository.findById(id);
-
-        if (findOrder.isPresent()) {
-            deleteOrder = findOrder.get();
-            orderRepository.deleteById(id);
-        }
-
-        return deleteOrder;
+        return orderService.deleteOrder(id);
     }
 
     @MutationMapping
     public Order createOrder(@Argument OrderInput input) {
 
-        Order newOrder = new Order(null, input.status(), input.orderDate(),null,null,null);
-
-        if (input.salesManId()!=null) {
-            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
-        }
-
-        Optional<Customer> customer = customerRepository.findById(input.customerId());
-
-        if (customer.isEmpty())
-            return newOrder;
-        else
-            newOrder.setCustomer(customer.get());
-
-        List<OrderItem> orderItems;
-        OrderItem orderItem;
-
-        if (input.orderItems()!=null) {
-
-            orderItems = new ArrayList<>(input.orderItems().size());
-
-            for (OrderItemInput orderItemInput : input.orderItems()) {
-
-                orderItem = new OrderItem(new OrderItemPK(null,orderItemInput.itemId()),
-                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
-
-                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
-
-                orderItems.add(orderItem);
-            }
-
-            newOrder.setOrderItems(orderItems);
-        }
-
-        newOrder = orderRepository.save(newOrder);
-
-        return newOrder;
+        return orderService.createOrder(input);
     }
 
     @MutationMapping
     public Order updateOrder(@Argument OrderInput input) {
 
-        Order newOrder = new Order(input.orderId(), input.status(), input.orderDate(),null,null,null);
-
-        Optional<Customer> customer;
-
-        if (input.salesManId()!=null) {
-            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
-        }
-
-        if (input.customerId()!=null) {
-            customer = customerRepository.findById(input.customerId());
-
-            if (customer.isEmpty())
-                return newOrder;
-            else
-                newOrder.setCustomer(customer.get());
-        }
-
-        List<OrderItem> orderItems;
-        OrderItem orderItem;
-
-        if (input.orderItems()!=null) {
-
-            orderItems = new ArrayList<>(input.orderItems().size());
-
-            for (OrderItemInput orderItemInput : input.orderItems()) {
-
-                orderItem = new OrderItem(new OrderItemPK(orderItemInput.orderId(),orderItemInput.itemId()),
-                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
-
-                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
-
-                orderItems.add(orderItem);
-            }
-
-            newOrder.setOrderItems(orderItems);
-        }
-
-        return orderRepository.save(newOrder);
+        return orderService.updateOrder(input);
     }
+
 }
 
 
