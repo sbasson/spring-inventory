@@ -1,10 +1,15 @@
 package com.example.demo.persistance.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "ORDER_ITEMS", schema = "OT")
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderItem {
 
     @EmbeddedId

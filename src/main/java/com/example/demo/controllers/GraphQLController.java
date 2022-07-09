@@ -5,6 +5,7 @@ import com.example.demo.persistance.entity.*;
 import com.example.demo.persistance.repository.*;
 import com.example.demo.utility.CountryProductsDTO;
 import com.example.demo.utility.OrderInput;
+import com.example.demo.utility.OrderItemInput;
 import com.example.demo.utility.ProductInput;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -222,11 +223,9 @@ class GraphQLController {
         Order newOrder = new Order(null, input.status(), input.orderDate(),null,null,null);
 
         Optional<Customer> customer = customerRepository.findById(input.customerId());
-        Optional<Employee> salesMan;
 
         if (input.salesManId()!=null) {
-            salesMan = employeeRepository.findById(input.salesManId());
-            salesMan.ifPresent(newOrder::setSalesMan);
+            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
         }
 
         if (customer.isEmpty())
@@ -234,7 +233,29 @@ class GraphQLController {
         else
             newOrder.setCustomer(customer.get());
 
-        return orderRepository.save(newOrder);
+        List<OrderItem> orderItems;
+        OrderItem orderItem;
+
+        if (input.orderItems()!=null) {
+
+            orderItems = new ArrayList<>(input.orderItems().size());
+
+            for (OrderItemInput orderItemInput : input.orderItems()) {
+
+                orderItem = new OrderItem(new OrderItemPK(null,orderItemInput.itemId()),
+                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
+
+                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
+
+                orderItems.add(orderItem);
+            }
+
+            newOrder.setOrderItems(orderItems);
+        }
+
+        newOrder = orderRepository.save(newOrder);
+
+        return newOrder;
     }
 
     @MutationMapping

@@ -85,7 +85,7 @@ public class Order {
         this.salesMan = salesMan;
     }
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
     public Collection<OrderItem> getOrderItems() {
         return orderItems;
     }

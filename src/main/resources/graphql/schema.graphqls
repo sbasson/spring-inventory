@@ -31,6 +31,15 @@ input OrderInput {
     orderDate: Date
     customerId: ID
     salesManId: ID
+    orderItems: [OrderItemInput]
+}
+
+input OrderItemInput {
+    orderId: ID
+    itemId: ID
+    productId: ID
+    quantity: Int
+    unitPrice: Int
 }
 
 input ProductInput {
@@ -98,6 +107,18 @@ type Order {
     orderDate: Date
     customer: Customer
     salesMan: Employee
+    orderItems: [OrderItem]
+}
+
+type OrderItem {
+    id: OrderItemPK
+    quantity: Int
+    unitPrice: Int
+}
+
+type OrderItemPK {
+    orderId: ID
+    itemId: ID
 }
 
 type Employee {

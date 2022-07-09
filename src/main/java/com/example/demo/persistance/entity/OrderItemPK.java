@@ -1,17 +1,21 @@
 package com.example.demo.persistance.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Objects;
 
 @Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderItemPK implements Serializable {
     public BigInteger orderId;
     public BigInteger itemId;
 
     @Column(name = "ORDER_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public BigInteger getOrderId() {
         return orderId;
     }
@@ -21,7 +25,6 @@ public class OrderItemPK implements Serializable {
     }
 
     @Column(name = "ITEM_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public BigInteger getItemId() {
         return itemId;
     }
