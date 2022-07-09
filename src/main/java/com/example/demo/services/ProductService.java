@@ -37,8 +37,6 @@ public class ProductService {
             productRepository.deleteById(id);
         }
 
-        warehouseService.updateInventory();
-
         return deleteProduct;
     }
 
@@ -56,7 +54,6 @@ public class ProductService {
 
         newProduct = productRepository.save(newProduct);
 
-        warehouseService.updateInventory();
 
         return newProduct;
     }
@@ -77,8 +74,6 @@ public class ProductService {
         }
 
         updateProduct = productRepository.save(updateProduct);
-
-        warehouseService.updateInventory();
 
         return updateProduct;
     }
