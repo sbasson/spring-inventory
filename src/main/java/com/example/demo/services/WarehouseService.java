@@ -21,6 +21,7 @@ public class WarehouseService {
 
 
     public Warehouse deleteWarehouse(BigInteger id) {
+
         Warehouse deleteWarehouse = new Warehouse();
 
         Optional<Warehouse> findWarehouse = warehouseRepository.findById(id);
@@ -33,7 +34,7 @@ public class WarehouseService {
         return deleteWarehouse;
     }
 
-    public List<Warehouse> warehousesOutOfStockByProduct(BigInteger id) {
+    public List<Warehouse> getWarehousesOutOfStockByProduct(BigInteger id) {
 
         List<Inventory> inventories = inventoryRepository.getInventoriesById_ProductId(id);
 
@@ -49,5 +50,9 @@ public class WarehouseService {
                 .stream().filter(i->i.getQuantity()>0).collect(Collectors.toList());
 
         return inventories;
+    }
+
+    public void updateInventory() {
+
     }
 }

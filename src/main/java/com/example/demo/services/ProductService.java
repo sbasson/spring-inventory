@@ -24,6 +24,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final CountryRepository countryRepository;
+    private final WarehouseService warehouseService;
 
 
     public Product deleteProduct(BigInteger id) {
@@ -36,12 +37,14 @@ public class ProductService {
             productRepository.deleteById(id);
         }
 
+        warehouseService.updateInventory();
+
         return deleteProduct;
     }
 
     public Product createProduct(ProductInput input) {
-        Product newProduct = new Product(null, input.productName(), input.description(),
-                input.standardCost(), input.listPrice());
+
+        Product newProduct = fromInput(input);
 
         Optional<ProductCategory> productCategory = productCategoryRepository.findById(input.productCategoryId());
 
@@ -51,12 +54,16 @@ public class ProductService {
 
         newProduct.setProductCategory(productCategory.get());
 
-        return productRepository.save(newProduct);
+        newProduct = productRepository.save(newProduct);
+
+        warehouseService.updateInventory();
+
+        return newProduct;
     }
 
     public Product updateProduct(ProductInput input) {
-        Product updateProduct = new Product(input.productId(), input.productName(), input.description(),
-                input.standardCost(), input.listPrice());
+
+        Product updateProduct = fromInput(input);
 
         Optional<ProductCategory> productCategory;
 
@@ -69,11 +76,15 @@ public class ProductService {
                 updateProduct.setProductCategory(productCategory.get());
         }
 
-        return productRepository.save(updateProduct);
+        updateProduct = productRepository.save(updateProduct);
+
+        warehouseService.updateInventory();
+
+        return updateProduct;
     }
 
     public List<Product> getProductsByCategory(BigInteger id) {
-        
+
         List<Product> products = productRepository.findProductsByProductCategory_CategoryId(id);
 
         return products;
@@ -94,5 +105,10 @@ public class ProductService {
         }
 
         return countryProductsDTO;
+    }
+
+    private Product fromInput(ProductInput input) {
+        return new Product(input.productId(), input.productName(), input.description(),
+                input.standardCost(), input.listPrice());
     }
 }

@@ -2,7 +2,6 @@ package com.example.demo.controllers;
 
 
 import com.example.demo.persistance.entity.*;
-import com.example.demo.persistance.repository.*;
 import com.example.demo.services.EmployeeService;
 import com.example.demo.services.OrderService;
 import com.example.demo.services.ProductService;
@@ -61,7 +60,7 @@ class GraphQLController {
     @QueryMapping
     public List<Warehouse> warehousesOutOfStockByProduct(@Argument BigInteger id) {
 
-        return warehouseService.warehousesOutOfStockByProduct(id);
+        return warehouseService.getWarehousesOutOfStockByProduct(id);
     }
 
     @QueryMapping

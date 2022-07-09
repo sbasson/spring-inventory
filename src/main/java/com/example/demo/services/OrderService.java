@@ -44,11 +44,9 @@ public class OrderService {
 
     public Order createOrder(OrderInput input) {
         
-        Order newOrder = new Order(null, input.status(), input.orderDate(),null,null,null);
+        Order newOrder = fromInput(input);
 
-        if (input.salesManId()!=null) {
-            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
-        }
+        setSalesMan(input, newOrder);
 
         Optional<Customer> customer = customerRepository.findById(input.customerId());
 
@@ -57,25 +55,7 @@ public class OrderService {
         else
             newOrder.setCustomer(customer.get());
 
-        List<OrderItem> orderItems;
-        OrderItem orderItem;
-
-        if (input.orderItems()!=null) {
-
-            orderItems = new ArrayList<>(input.orderItems().size());
-
-            for (OrderItemInput orderItemInput : input.orderItems()) {
-
-                orderItem = new OrderItem(new OrderItemPK(null,orderItemInput.itemId()),
-                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
-
-                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
-
-                orderItems.add(orderItem);
-            }
-
-            newOrder.setOrderItems(orderItems);
-        }
+        setOrderItems(input, newOrder);
 
         newOrder = orderRepository.save(newOrder);
 
@@ -84,13 +64,11 @@ public class OrderService {
 
     public Order updateOrder(OrderInput input) {
 
-        Order newOrder = new Order(input.orderId(), input.status(), input.orderDate(),null,null,null);
+        Order newOrder = fromInput(input);
 
         Optional<Customer> customer;
 
-        if (input.salesManId()!=null) {
-            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
-        }
+        setSalesMan(input, newOrder);
 
         if (input.customerId()!=null) {
             customer = customerRepository.findById(input.customerId());
@@ -101,27 +79,16 @@ public class OrderService {
                 newOrder.setCustomer(customer.get());
         }
 
-        List<OrderItem> orderItems;
-        OrderItem orderItem;
-
-        if (input.orderItems()!=null) {
-
-            orderItems = new ArrayList<>(input.orderItems().size());
-
-            for (OrderItemInput orderItemInput : input.orderItems()) {
-
-                orderItem = new OrderItem(new OrderItemPK(orderItemInput.orderId(),orderItemInput.itemId()),
-                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
-
-                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
-
-                orderItems.add(orderItem);
-            }
-
-            newOrder.setOrderItems(orderItems);
-        }
+        setOrderItems(input, newOrder);
 
         return orderRepository.save(newOrder);
+    }
+
+    private void setSalesMan(OrderInput input, Order newOrder) {
+
+        if (input.salesManId()!=null) {
+            employeeRepository.findById(input.salesManId()).ifPresent(newOrder::setSalesMan);
+        }
     }
 
     public List<Order> getOrdersByDate(LocalDate date) {
@@ -147,5 +114,31 @@ public class OrderService {
                 .stream().map(OrderItem::getOrder).distinct().collect(Collectors.toList());
 
         return orders;
+    }
+
+    private Order fromInput(OrderInput input) {
+        return new Order(input.orderId(), input.status(), input.orderDate(), null, null, null);
+    }
+
+    private void setOrderItems(OrderInput input, Order newOrder) {
+        List<OrderItem> orderItems;
+        OrderItem orderItem;
+
+        if (input.orderItems()!=null) {
+
+            orderItems = new ArrayList<>(input.orderItems().size());
+
+            for (OrderItemInput orderItemInput : input.orderItems()) {
+
+                orderItem = new OrderItem(new OrderItemPK(orderItemInput.orderId(),orderItemInput.itemId()),
+                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
+
+                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
+
+                orderItems.add(orderItem);
+            }
+
+            newOrder.setOrderItems(orderItems);
+        }
     }
 }
