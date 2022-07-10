@@ -2,7 +2,6 @@ package com.example.demo.services;
 
 import com.example.demo.persistance.entity.Order;
 import com.example.demo.persistance.repository.OrderRepository;
-import com.example.demo.services.OrderCreatedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -11,8 +10,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.util.concurrent.Queues;
-
-import java.util.Optional;
 
 /**
  * "Forwards" VisitCreatedEvents that are fired by Spring Boot in our domain layer
@@ -23,14 +20,14 @@ import java.util.Optional;
  */
 
 @Component
-public class OrderPublisher {
+public class OrderListenerPublisher {
 
 
-    private final OrderRepository orderRepository;
     private final Sinks.Many<Order> sink;
+    private final WarehouseService warehouseService;
 
-    public OrderPublisher(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    public OrderListenerPublisher(OrderRepository orderRepository, WarehouseService warehouseService) {
+        this.warehouseService = warehouseService;
         this.sink = Sinks.many()
                 .multicast()
                 .onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE, false);
@@ -39,16 +36,19 @@ public class OrderPublisher {
     @EventListener
     public void onNewOrder(OrderCreatedEvent event) {
         sink.emitNext(event.getOrder(), Sinks.EmitFailureHandler.FAIL_FAST);
+        warehouseService.updateWarehouseByOrderCreated(event.getOrder());
     }
 
     @EventListener
     public void onDeleteOrder(OrderDeletedEvent event) {
         sink.emitNext(event.getOrder(), Sinks.EmitFailureHandler.FAIL_FAST);
+        warehouseService.updateWarehouseByOrderDeleted(event.getOrder());
     }
 
     @EventListener
     public void onUpdateOrder(OrderUpdatedEvent event) {
         sink.emitNext(event.getOrder(), Sinks.EmitFailureHandler.FAIL_FAST);
+        warehouseService.updateWarehouseByOrderUpdated(event.getOrder(),event.getInput());
     }
 
     public Flux<Order> getPublisher() {

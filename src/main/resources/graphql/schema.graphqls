@@ -7,6 +7,8 @@ type Query {
     warehousesOutOfStockByProduct(id: ID): [Warehouse]
     ordersByDate(date: Date): [Order]
     productsByCategory(id: ID) : [Product]
+
+#    test(productId: ID, warehouseId: ID, quantity: Int): Int
 }
 
 type Mutation{
@@ -120,6 +122,7 @@ type OrderItem {
     id: OrderItemPK
     quantity: Int
     unitPrice: Int
+    product: Product
 }
 
 type OrderItemPK {

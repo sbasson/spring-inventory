@@ -8,6 +8,8 @@ import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.OrderItemInput;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -56,7 +58,7 @@ public class WarehouseService {
         return inventories;
     }
 
-    public void updateWarehouseOrderDeleted(Order order) {
+    public void updateWarehouseByOrderDeleted(Order order) {
 
         if (order.getOrderItems()==null) return;
         //for each order item - add the amount of product to some inventory of the particular product
@@ -66,7 +68,7 @@ public class WarehouseService {
         }
     }
 
-    public void updateWarehouseOrderCreated(Order order) {
+    public void updateWarehouseByOrderCreated(Order order) {
 
         //for each order item  go over his inventories and reduce
         for (OrderItem orderItem : order.getOrderItems()) {
@@ -74,7 +76,7 @@ public class WarehouseService {
         }
     }
 
-    public void updateWarehouseOrderUpdated(Order order, OrderInput orderInput) {
+    public void updateWarehouseByOrderUpdated(Order order, OrderInput orderInput) {
 
         int diff;
 
@@ -98,7 +100,7 @@ public class WarehouseService {
         }
     }
 
-    private void reduceFromInventoriesOf(BigInteger productId, int quantityToReduce) {
+    public void reduceFromInventoriesOf(BigInteger productId, int quantityToReduce) {
 
         Iterator<Inventory> iterator;
         Inventory availableInventory;
@@ -118,21 +120,23 @@ public class WarehouseService {
         }
     }
 
-    private void addInventoryOf(BigInteger productId, int quantity) {
+    public void addInventoryOf(BigInteger productId, int quantity) {
 
-        Inventory inventory;
         List<Inventory> inventories;
+        Inventory inventory;
+        Warehouse warehouse;
 
         inventories = inventoryRepository.getInventoriesById_ProductId(productId);
 
-        if (inventories.isEmpty())
-            inventory = new Inventory(new InventoryPK(productId,BigInteger.ONE),0,null,null);
+        if (inventories.isEmpty()) {
+            warehouse = warehouseRepository.findAll().get(0);
+            inventory = new Inventory(new InventoryPK(productId, warehouse.getWarehouseId()), 0, null, warehouse);
+            productRepository.findById(productId).ifPresent(inventory::setProduct);
+        }
         else
             inventory = inventories.get(0);
 
         inventory.setQuantity(inventory.getQuantity()+ quantity);
-        productRepository.findById(inventory.getId().getProductId()).ifPresent(inventory::setProduct);
-        warehouseRepository.findById(inventory.getId().getWarehouseId()).ifPresent(inventory::setWarehouse);
 
         inventoryRepository.save(inventory);
     }

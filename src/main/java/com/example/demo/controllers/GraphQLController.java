@@ -2,9 +2,6 @@ package com.example.demo.controllers;
 
 
 import com.example.demo.persistance.entity.*;
-import com.example.demo.persistance.repository.InventoryRepository;
-import com.example.demo.persistance.repository.ProductRepository;
-import com.example.demo.persistance.repository.WarehouseRepository;
 import com.example.demo.services.*;
 import com.example.demo.utility.CountryProductsDTO;
 import com.example.demo.utility.OrderInput;
@@ -19,7 +16,7 @@ import reactor.core.publisher.Flux;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -29,10 +26,7 @@ class GraphQLController {
     private final WarehouseService warehouseService;
     private final OrderService orderService;
     private final EmployeeService employeeService;
-    private final OrderPublisher orderPublisher;
-    private final InventoryRepository inventoryRepository;
-    private final WarehouseRepository warehouseRepository;
-    private final ProductRepository productRepository;
+    private final OrderListenerPublisher orderListenerPublisher;
 
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
@@ -126,31 +120,31 @@ class GraphQLController {
 
     @SubscriptionMapping
     public Flux<Order> onNewOrder() {
-        return orderPublisher.getPublisher();
+        return orderListenerPublisher.getPublisher();
     }
 
     @SubscriptionMapping
     public Flux<Order> onUpdateOrder() {
-        return orderPublisher.getPublisher();
+        return orderListenerPublisher.getPublisher();
     }
 
     @SubscriptionMapping
     public Flux<Order> onDeleteOrder() {
-        return orderPublisher.getPublisher();
+        return orderListenerPublisher.getPublisher();
     }
 
-    @MutationMapping
-    public int test() {
-
-        Inventory inventory = new Inventory(new InventoryPK(BigInteger.ONE, BigInteger.ONE), 0, null, null);
-
-        inventory.setQuantity(inventory.getQuantity()+ 7);
+//    @QueryMapping
+//    public int test(@Argument BigInteger productId, @Argument BigInteger warehouseId,@Argument int quantity) {
+//
+//        Order order = orderRepository.findById(BigInteger.ONE).get();
+//        warehouseService.updateWarehouseByOrderCreated(order);
+//        Inventory inventory = new Inventory(new InventoryPK(productId, warehouseId), quantity, null, null);
 //        productRepository.findById(inventory.getId().getProductId()).ifPresent(inventory::setProduct);
 //        warehouseRepository.findById(inventory.getId().getWarehouseId()).ifPresent(inventory::setWarehouse);
-        inventoryRepository.save(inventory);
-
-        return 1;
-    }
+//        inventory = warehouseService.save(inventory);
+//
+//        return 1;
+//    }
 
 }
 

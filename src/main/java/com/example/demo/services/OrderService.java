@@ -10,6 +10,7 @@ import com.example.demo.utility.OrderItemInput;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -31,8 +32,6 @@ public class OrderService {
     private final WarehouseService warehouseService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-
-
     public Order deleteOrder(BigInteger id) {
         
         Order deleteOrder = new Order();
@@ -43,8 +42,6 @@ public class OrderService {
             deleteOrder = findOrder.get();
             orderRepository.deleteById(id);
         }
-
-        warehouseService.updateWarehouseOrderDeleted(deleteOrder);
 
         applicationEventPublisher.publishEvent(new OrderDeletedEvent(deleteOrder));
 
@@ -67,8 +64,6 @@ public class OrderService {
         setOrderItems(newOrder, input);
 
         newOrder = orderRepository.save(newOrder);
-
-        warehouseService.updateWarehouseOrderCreated(newOrder);
 
         applicationEventPublisher.publishEvent(new OrderCreatedEvent(newOrder));
 
@@ -96,9 +91,7 @@ public class OrderService {
 
         updatedOrder = orderRepository.save(updatedOrder);
 
-        warehouseService.updateWarehouseOrderUpdated(updatedOrder,input);
-
-        applicationEventPublisher.publishEvent(new OrderUpdatedEvent(updatedOrder));
+        applicationEventPublisher.publishEvent(new OrderUpdatedEvent(updatedOrder,input));
 
         return updatedOrder;
     }
