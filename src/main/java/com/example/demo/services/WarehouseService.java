@@ -7,6 +7,8 @@ import com.example.demo.persistance.repository.WarehouseRepository;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.OrderItemInput;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class WarehouseService {
+
+    private static final Logger log = LoggerFactory.getLogger(WarehouseService.class);
 
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
@@ -36,6 +40,12 @@ public class WarehouseService {
             deleteWarehouse = findWarehouse.get();
             warehouseRepository.deleteById(id);
         }
+
+        log.info("Warehouse deleted '{" +
+                "warehouseId = " + deleteWarehouse.getWarehouseId() + "\n" +
+                ((deleteWarehouse.getWarehouseName()!=null)? ("warehouseName = " + deleteWarehouse.getWarehouseName() + "\n"):"")+
+                ((deleteWarehouse.getLocation()!=null)? ("locationId = " + deleteWarehouse.getLocation().getLocationId() + "\n"):"")+
+                "}'");
 
         return deleteWarehouse;
     }

@@ -9,6 +9,8 @@ import com.example.demo.persistance.repository.ProductRepository;
 import com.example.demo.utility.CountryProductsDTO;
 import com.example.demo.utility.ProductInput;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ProductService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
+
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
@@ -34,6 +39,8 @@ public class ProductService {
             deleteProduct = findProduct.get();
             productRepository.deleteById(id);
         }
+
+        crudLog(deleteProduct,"deleted");
 
         return deleteProduct;
     }
@@ -52,6 +59,7 @@ public class ProductService {
 
         newProduct = productRepository.save(newProduct);
 
+        crudLog(newProduct,"created");
 
         return newProduct;
     }
@@ -72,6 +80,8 @@ public class ProductService {
         }
 
         updateProduct = productRepository.save(updateProduct);
+
+        crudLog(updateProduct,"updated");
 
         return updateProduct;
     }
@@ -103,5 +113,17 @@ public class ProductService {
     private Product fromInput(ProductInput input) {
         return new Product(input.productId(), input.productName(), input.description(),
                 input.standardCost(), input.listPrice());
+    }
+
+    private void crudLog(Product product, String operation) {
+
+        log.info("Product " + operation + " '{" +
+                "productId = " + product.getProductId() + "\n" +
+                "productName = " + product.getProductName() + "\n" +
+                "description = " + product.getDescription() + "\n" +
+                "standardCost = " + product.getStandardCost() + "\n" +
+                "listPrice = " + product.getListPrice() + "\n" +
+                ((product.getProductCategory()!=null)? ("categoryId = " + product.getProductCategory().getCategoryId() + "\n"):"") +
+                "}'");
     }
 }

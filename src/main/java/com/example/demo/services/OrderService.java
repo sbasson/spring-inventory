@@ -8,6 +8,8 @@ import com.example.demo.persistance.repository.*;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.OrderItemInput;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class OrderService {
+
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
     private final EmployeeRepository employeeRepository;
     private final OrderRepository orderRepository;
@@ -43,13 +47,15 @@ public class OrderService {
             orderRepository.deleteById(id);
         }
 
+        crudLog(deleteOrder,"deleted");
+
         applicationEventPublisher.publishEvent(new OrderDeletedEvent(deleteOrder));
 
         return deleteOrder;
     }
 
     public Order createOrder(OrderInput input) {
-        
+
         Order newOrder = fromInput(input);
 
         setSalesMan(newOrder, input);
@@ -64,6 +70,8 @@ public class OrderService {
         setOrderItems(newOrder, input);
 
         newOrder = orderRepository.save(newOrder);
+
+        crudLog(newOrder,"created");
 
         applicationEventPublisher.publishEvent(new OrderCreatedEvent(newOrder));
 
@@ -90,6 +98,9 @@ public class OrderService {
         setOrderItems(updatedOrder, input);
 
         updatedOrder = orderRepository.save(updatedOrder);
+
+        crudLog(updatedOrder,"updated");
+
 
         applicationEventPublisher.publishEvent(new OrderUpdatedEvent(updatedOrder,input));
 
@@ -152,5 +163,16 @@ public class OrderService {
 
             newOrder.setOrderItems(orderItems);
         }
+    }
+
+    private void crudLog(Order order,String operation) {
+
+        log.info("Order " + operation + " '{" +
+                "orderId = " + order.getOrderId() + "\n" +
+                "customerId = " + order.getCustomer().getCustomerId() + "\n" +
+                "status = " + order.getStatus() + "\n" +
+                ((order.getSalesMan()!=null)? ("salesManId = " + order.getSalesMan().getEmployeeId() + "\n"):"")+
+                "orderDate = " + order.getOrderDate() + "\n" +
+                "}'");
     }
 }

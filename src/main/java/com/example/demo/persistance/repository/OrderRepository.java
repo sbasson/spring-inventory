@@ -1,6 +1,5 @@
 package com.example.demo.persistance.repository;
 
-import com.example.demo.persistance.entity.Employee;
 import com.example.demo.persistance.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
