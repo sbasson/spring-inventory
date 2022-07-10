@@ -25,6 +25,12 @@ type Mutation{
     deleteWarehouse(id: ID): Warehouse
 }
 
+type Subscription {
+    onNewOrder: Order!
+    onUpdateOrder: Order!
+    onDeleteOrder: Order!
+}
+
 input OrderInput {
     orderId : ID
     status: String

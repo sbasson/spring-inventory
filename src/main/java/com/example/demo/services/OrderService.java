@@ -8,11 +8,13 @@ import com.example.demo.persistance.repository.*;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.OrderItemInput;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final OrderItemRepository orderItemRepository;
     private final WarehouseService warehouseService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
 
 
@@ -42,6 +45,8 @@ public class OrderService {
         }
 
         warehouseService.updateWarehouseOrderDeleted(deleteOrder);
+
+        applicationEventPublisher.publishEvent(new OrderDeletedEvent(deleteOrder));
 
         return deleteOrder;
     }
@@ -64,6 +69,8 @@ public class OrderService {
         newOrder = orderRepository.save(newOrder);
 
         warehouseService.updateWarehouseOrderCreated(newOrder);
+
+        applicationEventPublisher.publishEvent(new OrderCreatedEvent(newOrder));
 
         return newOrder;
     }
@@ -90,6 +97,8 @@ public class OrderService {
         updatedOrder = orderRepository.save(updatedOrder);
 
         warehouseService.updateWarehouseOrderUpdated(updatedOrder,input);
+
+        applicationEventPublisher.publishEvent(new OrderUpdatedEvent(updatedOrder));
 
         return updatedOrder;
     }

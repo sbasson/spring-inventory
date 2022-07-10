@@ -16,7 +16,6 @@ public class InventoryPK implements Serializable {
     private BigInteger warehouseId;
 
     @Column(name = "PRODUCT_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public BigInteger getProductId() {
         return productId;
     }
@@ -26,7 +25,6 @@ public class InventoryPK implements Serializable {
     }
 
     @Column(name = "WAREHOUSE_ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public BigInteger getWarehouseId() {
         return warehouseId;
     }

@@ -2,10 +2,10 @@ package com.example.demo.controllers;
 
 
 import com.example.demo.persistance.entity.*;
-import com.example.demo.services.EmployeeService;
-import com.example.demo.services.OrderService;
-import com.example.demo.services.ProductService;
-import com.example.demo.services.WarehouseService;
+import com.example.demo.persistance.repository.InventoryRepository;
+import com.example.demo.persistance.repository.ProductRepository;
+import com.example.demo.persistance.repository.WarehouseRepository;
+import com.example.demo.services.*;
 import com.example.demo.utility.CountryProductsDTO;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.ProductInput;
@@ -13,7 +13,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
 import org.springframework.stereotype.Controller;
+import reactor.core.publisher.Flux;
+
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.*;
@@ -26,6 +29,10 @@ class GraphQLController {
     private final WarehouseService warehouseService;
     private final OrderService orderService;
     private final EmployeeService employeeService;
+    private final OrderPublisher orderPublisher;
+    private final InventoryRepository inventoryRepository;
+    private final WarehouseRepository warehouseRepository;
+    private final ProductRepository productRepository;
 
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
@@ -115,6 +122,34 @@ class GraphQLController {
     public Order updateOrder(@Argument OrderInput input) {
 
         return orderService.updateOrder(input);
+    }
+
+    @SubscriptionMapping
+    public Flux<Order> onNewOrder() {
+        return orderPublisher.getPublisher();
+    }
+
+    @SubscriptionMapping
+    public Flux<Order> onUpdateOrder() {
+        return orderPublisher.getPublisher();
+    }
+
+    @SubscriptionMapping
+    public Flux<Order> onDeleteOrder() {
+        return orderPublisher.getPublisher();
+    }
+
+    @MutationMapping
+    public int test() {
+
+        Inventory inventory = new Inventory(new InventoryPK(BigInteger.ONE, BigInteger.ONE), 0, null, null);
+
+        inventory.setQuantity(inventory.getQuantity()+ 7);
+//        productRepository.findById(inventory.getId().getProductId()).ifPresent(inventory::setProduct);
+//        warehouseRepository.findById(inventory.getId().getWarehouseId()).ifPresent(inventory::setWarehouse);
+        inventoryRepository.save(inventory);
+
+        return 1;
     }
 
 }

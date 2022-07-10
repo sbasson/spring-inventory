@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.persistance.entity.*;
 import com.example.demo.persistance.repository.InventoryRepository;
+import com.example.demo.persistance.repository.ProductRepository;
 import com.example.demo.persistance.repository.WarehouseRepository;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.OrderItemInput;
@@ -20,6 +21,7 @@ public class WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
+    private final ProductRepository productRepository;
 
 
     public Warehouse deleteWarehouse(BigInteger id) {
@@ -56,6 +58,7 @@ public class WarehouseService {
 
     public void updateWarehouseOrderDeleted(Order order) {
 
+        if (order.getOrderItems()==null) return;
         //for each order item - add the amount of product to some inventory of the particular product
         //or create one if not exists
         for (OrderItem orderItem : order.getOrderItems()) {
@@ -128,6 +131,8 @@ public class WarehouseService {
             inventory = inventories.get(0);
 
         inventory.setQuantity(inventory.getQuantity()+ quantity);
+        productRepository.findById(inventory.getId().getProductId()).ifPresent(inventory::setProduct);
+        warehouseRepository.findById(inventory.getId().getWarehouseId()).ifPresent(inventory::setWarehouse);
 
         inventoryRepository.save(inventory);
     }
