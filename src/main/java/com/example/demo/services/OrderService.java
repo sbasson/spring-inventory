@@ -163,12 +163,6 @@ public class OrderService {
 
     private void crudLog(Order order,String operation) {
 
-        log.info("Order " + operation + " '{" +
-                "orderId = " + order.getOrderId() + "\n" +
-                "customerId = " + order.getCustomer().getCustomerId() + "\n" +
-                "status = " + order.getStatus() + "\n" +
-                ((order.getSalesMan()!=null)? ("salesManId = " + order.getSalesMan().getEmployeeId() + "\n"):"")+
-                "orderDate = " + order.getOrderDate() + "\n" +
-                "}'");
+        log.info("Order " + operation + " '{" + order.toString() +"}'");
     }
 }

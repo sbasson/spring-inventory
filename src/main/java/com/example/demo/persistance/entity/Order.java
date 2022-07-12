@@ -93,4 +93,13 @@ public class Order {
     public void setOrderItems(Collection<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
+
+    @Override
+    public String toString() {
+        return "orderId = " + orderId + "\n" +
+                "customerId = " + customer.getCustomerId() + "\n" +
+                "status = " + status + "\n" +
+                ((salesMan!=null)? ("salesManId = " + salesMan.getEmployeeId() + "\n"):"")+
+                "orderDate = " + orderDate;
+    }
 }

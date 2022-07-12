@@ -121,13 +121,6 @@ public class ProductService {
 
     private void crudLog(Product product, String operation) {
 
-        log.info("Product " + operation + " '{" +
-                "productId = " + product.getProductId() + "\n" +
-                "productName = " + product.getProductName() + "\n" +
-                "description = " + product.getDescription() + "\n" +
-                "standardCost = " + product.getStandardCost() + "\n" +
-                "listPrice = " + product.getListPrice() + "\n" +
-                ((product.getProductCategory()!=null)? ("categoryId = " + product.getProductCategory().getCategoryId() + "\n"):"") +
-                "}'");
+        log.info("Product " + operation + " '{" +product.toString() + "}'");
     }
 }

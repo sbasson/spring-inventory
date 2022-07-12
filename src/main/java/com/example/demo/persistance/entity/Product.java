@@ -125,4 +125,14 @@ public class Product {
     public int hashCode() {
         return Objects.hash(productId);
     }
+
+    @Override
+    public String toString() {
+        return "productId = " + productId + "\n" +
+                "productName = " + productName + "\n" +
+                "description = " + description + "\n" +
+                "standardCost = " + standardCost + "\n" +
+                "listPrice = " + listPrice + "\n" +
+                ((productCategory!=null)? ("categoryId = " + productCategory.getCategoryId() + "\n"):"");
+    }
 }
