@@ -8,7 +8,7 @@ type Query {
     ordersByDate(date: Date): [Order]
     productsByCategory(id: ID) : [Product]
 
-#    test(productId: ID, warehouseId: ID, quantity: Int): Int
+    test(param1: ID, param2: ID, paramInt: Int): Int
 }
 
 type Mutation{

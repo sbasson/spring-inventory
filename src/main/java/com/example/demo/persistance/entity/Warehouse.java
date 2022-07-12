@@ -1,15 +1,24 @@
 package com.example.demo.persistance.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.util.Objects;
 
 @Entity
 @Table(name = "WAREHOUSES", schema = "OT")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Warehouse {
     private BigInteger warehouseId;
     private String warehouseName;
     private Location location;
+
+    public Warehouse(BigInteger warehouseId) {
+        this.warehouseId = warehouseId;
+    }
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

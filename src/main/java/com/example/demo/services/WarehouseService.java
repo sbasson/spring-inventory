@@ -2,7 +2,6 @@ package com.example.demo.services;
 
 import com.example.demo.persistance.entity.*;
 import com.example.demo.persistance.repository.InventoryRepository;
-import com.example.demo.persistance.repository.ProductRepository;
 import com.example.demo.persistance.repository.WarehouseRepository;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.OrderItemInput;
@@ -10,8 +9,6 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -27,7 +24,7 @@ public class WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
     private final InventoryRepository inventoryRepository;
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
 
     public Warehouse deleteWarehouse(BigInteger id) {
@@ -39,14 +36,13 @@ public class WarehouseService {
         if (findWarehouse.isPresent()) {
             deleteWarehouse = findWarehouse.get();
             warehouseRepository.deleteById(id);
+
+            log.info("Warehouse deleted '{" +
+                    "warehouseId = " + deleteWarehouse.getWarehouseId() + "\n" +
+                    ((deleteWarehouse.getWarehouseName()!=null)? ("warehouseName = " + deleteWarehouse.getWarehouseName() + "\n"):"")+
+                    ((deleteWarehouse.getLocation()!=null)? ("locationId = " + deleteWarehouse.getLocation().getLocationId() + "\n"):"")+
+                    "}'");
         }
-
-        log.info("Warehouse deleted '{" +
-                "warehouseId = " + deleteWarehouse.getWarehouseId() + "\n" +
-                ((deleteWarehouse.getWarehouseName()!=null)? ("warehouseName = " + deleteWarehouse.getWarehouseName() + "\n"):"")+
-                ((deleteWarehouse.getLocation()!=null)? ("locationId = " + deleteWarehouse.getLocation().getLocationId() + "\n"):"")+
-                "}'");
-
         return deleteWarehouse;
     }
 
@@ -71,6 +67,7 @@ public class WarehouseService {
     public void updateWarehouseByOrderDeleted(Order order) {
 
         if (order.getOrderItems()==null) return;
+
         //for each order item - add the amount of product to some inventory of the particular product
         //or create one if not exists
         for (OrderItem orderItem : order.getOrderItems()) {
@@ -80,6 +77,8 @@ public class WarehouseService {
 
     public void updateWarehouseByOrderCreated(Order order) {
 
+        if (order.getOrderItems()==null) return;
+
         //for each order item  go over his inventories and reduce
         for (OrderItem orderItem : order.getOrderItems()) {
             reduceFromInventoriesOf(orderItem.getProduct().getProductId(), orderItem.getQuantity());
@@ -88,10 +87,12 @@ public class WarehouseService {
 
     public void updateWarehouseByOrderUpdated(Order order, OrderInput orderInput) {
 
+        //we compare between old order items with new order items from input
         int diff;
 
-        //for each order item  go over his inventories and find the difference between old
-        //quantity to new and update by the result
+        //for each order item input we search him in the order items list
+        //if it exists we update the quantity as the subtraction result
+        //if not we update the whole quantity
         for (OrderItemInput orderItemInput : orderInput.orderItems()) {
 
             Optional<OrderItem> orderItem = order.getOrderItems().stream()
@@ -103,10 +104,10 @@ public class WarehouseService {
             else
                 diff = orderItemInput.quantity();
 
-            if (diff>0) //the new amount was bigger, increasing.
-                addInventoryOf(orderItemInput.productId(), diff);
-            else //the new amount was smaller, decreasing.
-                reduceFromInventoriesOf(orderItemInput.productId(),Math.abs(diff));
+            if (diff<0) //the new amount was smaller, increasing from inventory
+                addInventoryOf(orderItemInput.productId(), Math.abs(diff));
+            else //the new amount was bigger, decreasing
+                reduceFromInventoriesOf(orderItemInput.productId(),diff);
         }
     }
 
@@ -115,6 +116,7 @@ public class WarehouseService {
         Iterator<Inventory> iterator;
         Inventory availableInventory;
         List<Inventory> availableInventories;
+        int quantity;
 
         availableInventories = getAvailableInventoriesByProduct(productId);
 
@@ -123,9 +125,10 @@ public class WarehouseService {
         while (quantityToReduce > 0 && iterator.hasNext()) {
 
             availableInventory = iterator.next();
-            int quantity = availableInventory.getQuantity();
+            quantity = availableInventory.getQuantity();
             availableInventory.setQuantity(Math.max(quantity - quantityToReduce, 0));
             quantityToReduce =  quantityToReduce - quantity;
+
             inventoryRepository.save(availableInventory);
         }
     }
@@ -139,15 +142,27 @@ public class WarehouseService {
         inventories = inventoryRepository.getInventoriesById_ProductId(productId);
 
         if (inventories.isEmpty()) {
-            warehouse = warehouseRepository.findAll().get(0);
-            inventory = new Inventory(new InventoryPK(productId, warehouse.getWarehouseId()), 0, null, warehouse);
-            productRepository.findById(productId).ifPresent(inventory::setProduct);
+            warehouse = warehouseRepository.findAll().get(0); //choose arbitrary warehouse
+            inventory = buildInventory(productId, warehouse.getWarehouseId());
         }
-        else
+        else {
             inventory = inventories.get(0);
+        }
 
-        inventory.setQuantity(inventory.getQuantity()+ quantity);
+        inventory.setQuantity(inventory.getQuantity() + quantity);
 
         inventoryRepository.save(inventory);
+    }
+
+    public Inventory buildInventory(BigInteger productId, BigInteger warehouseId) {
+
+        Warehouse warehouse = buildWarehouse(warehouseId);
+        Product product = productService.buildProduct(productId);
+
+        return new Inventory(new InventoryPK(productId, warehouseId), 0, product, warehouse);
+    }
+
+    public Warehouse buildWarehouse(BigInteger warehouseId) {
+        return new Warehouse(warehouseId);
     }
 }

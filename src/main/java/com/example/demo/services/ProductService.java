@@ -6,7 +6,7 @@ import com.example.demo.persistance.entity.ProductCategory;
 import com.example.demo.persistance.repository.CountryRepository;
 import com.example.demo.persistance.repository.ProductCategoryRepository;
 import com.example.demo.persistance.repository.ProductRepository;
-import com.example.demo.utility.CountryProductsDTO;
+import com.example.demo.utility.CountryProducts;
 import com.example.demo.utility.ProductInput;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class ProductService {
 
     public Product createProduct(ProductInput input) {
 
-        Product newProduct = fromInput(input);
+        Product newProduct = buildFromInput(input);
 
         Optional<ProductCategory> productCategory = productCategoryRepository.findById(input.productCategoryId());
 
@@ -66,7 +66,7 @@ public class ProductService {
 
     public Product updateProduct(ProductInput input) {
 
-        Product updateProduct = fromInput(input);
+        Product updateProduct = buildFromInput(input);
 
         Optional<ProductCategory> productCategory;
 
@@ -93,26 +93,30 @@ public class ProductService {
         return products;
     }
 
-    public List<CountryProductsDTO> getCountriesWithTopFiveSellingProduct() {
+    public List<CountryProducts> getCountriesWithTopFiveSellingProduct() {
 
         List<Country> allCountries = countryRepository.findAll();
 
         List<Product> products;
-        List<CountryProductsDTO> countryProductsDTO = new ArrayList<>();
+        List<CountryProducts> countryProducts = new ArrayList<>(allCountries.size());
 
         for (Country country : allCountries) {
 
             products = productRepository.topSellingProductsByCountry(country.getCountryId(), PageRequest.of(0, 5));
 
-            countryProductsDTO.add(new CountryProductsDTO(country,products));
+            countryProducts.add(new CountryProducts(country,products));
         }
 
-        return countryProductsDTO;
+        return countryProducts;
     }
 
-    private Product fromInput(ProductInput input) {
+    private Product buildFromInput(ProductInput input) {
         return new Product(input.productId(), input.productName(), input.description(),
                 input.standardCost(), input.listPrice());
+    }
+
+    public Product buildProduct(BigInteger productId) {
+        return new Product(productId);
     }
 
     private void crudLog(Product product, String operation) {

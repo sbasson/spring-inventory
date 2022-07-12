@@ -12,12 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,7 +54,7 @@ public class OrderService {
 
     public Order createOrder(OrderInput input) {
 
-        Order newOrder = fromInput(input);
+        Order newOrder = buildFromInput(input);
 
         setSalesMan(newOrder, input);
 
@@ -80,7 +78,7 @@ public class OrderService {
 
     public Order updateOrder(OrderInput input) {
 
-        Order updatedOrder = fromInput(input);
+        Order updatedOrder = buildFromInput(input);
 
         Optional<Customer> customer;
 
@@ -97,14 +95,13 @@ public class OrderService {
 
         setOrderItems(updatedOrder, input);
 
-        updatedOrder = orderRepository.save(updatedOrder);
+        Order returnedOrder = orderRepository.save(updatedOrder);
 
-        crudLog(updatedOrder,"updated");
-
+        crudLog(returnedOrder,"updated");
 
         applicationEventPublisher.publishEvent(new OrderUpdatedEvent(updatedOrder,input));
 
-        return updatedOrder;
+        return returnedOrder;
     }
 
     private void setSalesMan(Order order, OrderInput input) {
@@ -139,7 +136,7 @@ public class OrderService {
         return orders;
     }
 
-    private Order fromInput(OrderInput input) {
+    private Order buildFromInput(OrderInput input) {
         return new Order(input.orderId(), input.status(), input.orderDate(), null, null, null);
     }
 
@@ -160,7 +157,6 @@ public class OrderService {
 
                 orderItems.add(orderItem);
             }
-
             newOrder.setOrderItems(orderItems);
         }
     }

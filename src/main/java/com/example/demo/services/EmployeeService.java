@@ -19,19 +19,20 @@ public class EmployeeService {
 
     public List<Employee> getSalesmanWithPendingOrders() {
 
-        //option one - filter in the app, more code, less readable, more runtime
-        //List<Employee> all = employeeRepository.findAll();
-        //
-        //Map<Employee, List<Order>> salesToOrderMap = all.stream()
-        //        .flatMap(employee -> employee.getOrders().stream())
-        //        .filter(order -> order.getStatus().equals("Pending"))
-        //        .collect(Collectors.groupingBy(Order::getSalesMan));
-        //
-        //Set<Employee> pendingSalesMan = salesToOrderMap.keySet();
-        //
-        //pendingSalesMan.forEach(employee -> employee.setOrders(salesToOrderMap.get(employee)));
-        //
-        //return pendingSalesMan;
+        /*option one - filter in the app, more code, less readable, more runtime
+
+        List<Employee> all = employeeRepository.findAll();
+
+        Map<Employee, List<Order>> salesToOrderMap = all.stream()
+                .flatMap(employee -> employee.getOrders().stream())
+                .filter(order -> order.getStatus().equals("Pending"))
+                .collect(Collectors.groupingBy(Order::getSalesMan));
+
+        Set<Employee> pendingSalesMan = salesToOrderMap.keySet();
+
+        pendingSalesMan.forEach(employee -> employee.setOrders(salesToOrderMap.get(employee)));
+
+        return pendingSalesMan;*/
 
         //option two - filter in the jpa via query, less code, more readable, less runtime
         List<Employee> pendingSalesMan = employeeRepository.salesMansOfPendingOrders();

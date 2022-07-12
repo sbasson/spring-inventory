@@ -22,6 +22,10 @@ public class Product {
     private ProductCategory productCategory;
     private Collection<OrderItem> orderItems;
 
+    public Product(BigInteger productId) {
+        this.productId = productId;
+    }
+
     public Product(BigInteger productId, String productName, String description, Integer standardCost, Integer listPrice) {
         this.productId = productId;
         this.productName = productName;

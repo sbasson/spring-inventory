@@ -1,5 +1,8 @@
 package com.example.demo.persistance.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -8,6 +11,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "EMPLOYEES", schema = "OT")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Employee {
     private BigInteger employeeId;
     private String firstName;

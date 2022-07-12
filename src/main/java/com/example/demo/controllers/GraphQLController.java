@@ -3,7 +3,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.persistance.entity.*;
 import com.example.demo.services.*;
-import com.example.demo.utility.CountryProductsDTO;
+import com.example.demo.utility.CountryProducts;
 import com.example.demo.utility.OrderInput;
 import com.example.demo.utility.ProductInput;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ class GraphQLController {
     private final WarehouseService warehouseService;
     private final OrderService orderService;
     private final EmployeeService employeeService;
-    private final OrderListenerPublisher orderListenerPublisher;
+    private final OrderPublisher orderPublisher;
 
     @QueryMapping
     public List<Order> ordersByProduct(@Argument BigInteger id) {
@@ -53,7 +53,7 @@ class GraphQLController {
     }
 
     @QueryMapping
-    public List<CountryProductsDTO> countriesWithTopFiveSellingProduct() {
+    public List<CountryProducts> countriesWithTopFiveSellingProduct() {
 
         return productService.getCountriesWithTopFiveSellingProduct();
     }
@@ -120,29 +120,27 @@ class GraphQLController {
 
     @SubscriptionMapping
     public Flux<Order> onNewOrder() {
-        return orderListenerPublisher.getPublisher();
+        return orderPublisher.getPublisher();
     }
 
     @SubscriptionMapping
     public Flux<Order> onUpdateOrder() {
-        return orderListenerPublisher.getPublisher();
+        return orderPublisher.getPublisher();
     }
 
     @SubscriptionMapping
     public Flux<Order> onDeleteOrder() {
-        return orderListenerPublisher.getPublisher();
+        return orderPublisher.getPublisher();
     }
 
 //    @QueryMapping
-//    public int test(@Argument BigInteger productId, @Argument BigInteger warehouseId,@Argument int quantity) {
+//    public int test(@Argument BigInteger param1, @Argument BigInteger param2,@Argument int paramInt) {
 //
-//        Order order = orderRepository.findById(BigInteger.ONE).get();
-//        warehouseService.updateWarehouseByOrderCreated(order);
-//        Inventory inventory = new Inventory(new InventoryPK(productId, warehouseId), quantity, null, null);
-//        productRepository.findById(inventory.getId().getProductId()).ifPresent(inventory::setProduct);
-//        warehouseRepository.findById(inventory.getId().getWarehouseId()).ifPresent(inventory::setWarehouse);
-//        inventory = warehouseService.save(inventory);
+//        Inventory inventory = new Inventory(/*new InventoryPK(param1,param2)*/null,paramInt,
+//                new Product(param1,null,null,null,null),
+//                new Warehouse(param2,"null",null));
 //
+//        inventory = inventoryRepository.save(inventory);
 //        return 1;
 //    }
 
