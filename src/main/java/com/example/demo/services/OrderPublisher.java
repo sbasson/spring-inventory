@@ -1,10 +1,12 @@
 package com.example.demo.services;
 
 import com.example.demo.persistance.entity.Order;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.util.concurrent.Queues;
 
+@Component
 public class OrderPublisher {
 
     private final Sinks.Many<Order> sink;
