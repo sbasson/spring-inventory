@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -30,6 +31,7 @@ public class ProductService {
     private final ProductCategoryRepository productCategoryRepository;
     private final CountryRepository countryRepository;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Product deleteProduct(BigInteger id) {
         Product deleteProduct = new Product();
 
@@ -45,6 +47,7 @@ public class ProductService {
         return deleteProduct;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Product createProduct(ProductInput input) {
 
         Product newProduct = buildFromInput(input);
@@ -64,6 +67,7 @@ public class ProductService {
         return newProduct;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Product updateProduct(ProductInput input) {
 
         Product updateProduct = buildFromInput(input);
