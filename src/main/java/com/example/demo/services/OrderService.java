@@ -58,7 +58,7 @@ public class OrderService {
 
         setSalesMan(newOrder, input);
 
-        Optional<Customer> customer = customerRepository.findById(input.customerId());
+        Optional<Customer> customer = customerRepository.findById(input.getCustomerId());
 
         if (customer.isEmpty())
             return newOrder;
@@ -84,8 +84,8 @@ public class OrderService {
 
         setSalesMan(updatedOrder, input);
 
-        if (input.customerId()!=null) {
-            customer = customerRepository.findById(input.customerId());
+        if (input.getCustomerId()!=null) {
+            customer = customerRepository.findById(input.getCustomerId());
 
             if (customer.isEmpty())
                 return updatedOrder;
@@ -106,8 +106,8 @@ public class OrderService {
 
     private void setSalesMan(Order order, OrderInput input) {
 
-        if (input.salesManId()!=null) {
-            employeeRepository.findById(input.salesManId()).ifPresent(order::setSalesMan);
+        if (input.getSalesManId()!=null) {
+            employeeRepository.findById(input.getSalesManId()).ifPresent(order::setSalesMan);
         }
     }
 
@@ -137,23 +137,23 @@ public class OrderService {
     }
 
     private Order buildFromInput(OrderInput input) {
-        return new Order(input.orderId(), input.status(), input.orderDate(), null, null, null);
+        return new Order(input.getOrderId(), input.getStatus(), input.getOrderDate(), null, null, null);
     }
 
     private void setOrderItems(Order newOrder, OrderInput input) {
         List<OrderItem> orderItems;
         OrderItem orderItem;
 
-        if (input.orderItems()!=null) {
+        if (input.getOrderItems()!=null) {
 
-            orderItems = new ArrayList<>(input.orderItems().size());
+            orderItems = new ArrayList<>(input.getOrderItems().size());
 
-            for (OrderItemInput orderItemInput : input.orderItems()) {
+            for (OrderItemInput orderItemInput : input.getOrderItems()) {
 
-                orderItem = new OrderItem(new OrderItemPK(orderItemInput.orderId(),orderItemInput.itemId()),
-                        orderItemInput.quantity(), orderItemInput.unitPrice(), null, newOrder);
+                orderItem = new OrderItem(new OrderItemPK(orderItemInput.getOrderId(),orderItemInput.getItemId()),
+                        orderItemInput.getQuantity(), orderItemInput.getUnitPrice(), null, newOrder);
 
-                productRepository.findById(orderItemInput.productId()).ifPresent(orderItem::setProduct);
+                productRepository.findById(orderItemInput.getProductId()).ifPresent(orderItem::setProduct);
 
                 orderItems.add(orderItem);
             }

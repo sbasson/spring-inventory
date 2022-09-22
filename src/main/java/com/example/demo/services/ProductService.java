@@ -52,7 +52,7 @@ public class ProductService {
 
         Product newProduct = buildFromInput(input);
 
-        Optional<ProductCategory> productCategory = productCategoryRepository.findById(input.productCategoryId());
+        Optional<ProductCategory> productCategory = productCategoryRepository.findById(input.getProductCategoryId());
 
         if (productCategory.isEmpty()) {
             return newProduct;
@@ -74,8 +74,8 @@ public class ProductService {
 
         Optional<ProductCategory> productCategory;
 
-        if (input.productCategoryId()!=null) {
-            productCategory = productCategoryRepository.findById(input.productCategoryId());
+        if (input.getProductCategoryId()!=null) {
+            productCategory = productCategoryRepository.findById(input.getProductCategoryId());
 
             if (productCategory.isEmpty())
                 return updateProduct;
@@ -115,8 +115,8 @@ public class ProductService {
     }
 
     private Product buildFromInput(ProductInput input) {
-        return new Product(input.productId(), input.productName(), input.description(),
-                input.standardCost(), input.listPrice());
+        return new Product(input.getProductId(), input.getProductName(), input.getDescription(),
+                input.getStandardCost(), input.getListPrice());
     }
 
     public Product buildProduct(BigInteger productId) {

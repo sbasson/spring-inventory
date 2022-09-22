@@ -93,21 +93,21 @@ public class WarehouseService {
         //for each order item input we search him in the order items list
         //if it exists we update the quantity as the subtraction result
         //if not we update the whole quantity
-        for (OrderItemInput orderItemInput : orderInput.orderItems()) {
+        for (OrderItemInput orderItemInput : orderInput.getOrderItems()) {
 
             Optional<OrderItem> orderItem = order.getOrderItems().stream()
-                    .filter(oi -> oi.getId().orderId.equals(orderItemInput.orderId()))
+                    .filter(oi -> oi.getId().orderId.equals(orderItemInput.getOrderId()))
                     .findFirst();
 
             if (orderItem.isPresent())
-                diff = orderItemInput.quantity() - orderItem.get().getQuantity();
+                diff = orderItemInput.getQuantity() - orderItem.get().getQuantity();
             else
-                diff = orderItemInput.quantity();
+                diff = orderItemInput.getQuantity();
 
             if (diff<0) //the new amount was smaller, increasing from inventory
-                addInventoryOf(orderItemInput.productId(), Math.abs(diff));
+                addInventoryOf(orderItemInput.getProductId(), Math.abs(diff));
             else //the new amount was bigger, decreasing
-                reduceFromInventoriesOf(orderItemInput.productId(),diff);
+                reduceFromInventoriesOf(orderItemInput.getProductId(),diff);
         }
     }
 

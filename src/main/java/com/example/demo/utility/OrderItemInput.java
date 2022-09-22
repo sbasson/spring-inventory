@@ -1,10 +1,19 @@
 package com.example.demo.utility;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigInteger;
 
-public record OrderItemInput(BigInteger orderId,
-                             BigInteger itemId,
-                             BigInteger productId,
-                             int quantity,
-                             int unitPrice) {
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class OrderItemInput {
+
+    private BigInteger orderId;
+    private BigInteger itemId;
+    private BigInteger productId;
+    private int quantity;
+    private int unitPrice;
 }

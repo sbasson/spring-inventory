@@ -1,12 +1,22 @@
 package com.example.demo.utility;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
-public record OrderInput(BigInteger orderId,
-                         String status,
-                         LocalDate orderDate,
-                         BigInteger customerId,
-                         BigInteger salesManId,
-                         List<OrderItemInput> orderItems) { }
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class OrderInput {
+
+    private BigInteger orderId;
+    private String status;
+    private LocalDate orderDate;
+    private BigInteger customerId;
+    private BigInteger salesManId;
+    private List<OrderItemInput> orderItems;
+}
